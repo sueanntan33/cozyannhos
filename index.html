@@ -1041,13 +1041,14 @@ function getHistory(){
 // DATE + SIDEBAR
 // ═══════════════════════════════════════════════════════════
 (()=>{
-  const d=new Date(2026,3,19);
+  const d=new Date();
   const days=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
   const months=['January','February','March','April','May','June','July','August','September','October','November','December'];
-  document.getElementById('sb-day').textContent=days[d.getDay()];
-  document.getElementById('sb-date').textContent=`${months[d.getMonth()]} ${d.getDate()}, ${d.getFullYear()}`;
-  document.getElementById('tracker-sub').textContent=`${days[d.getDay()]}, ${months[d.getMonth()]} ${d.getDate()}, ${d.getFullYear()}`;
-  const h=d.getHours();
+  const realNow=new Date();
+  document.getElementById('sb-day').textContent=days[realNow.getDay()];
+  document.getElementById('sb-date').textContent=`${months[realNow.getMonth()]} ${realNow.getDate()}, ${realNow.getFullYear()}`;
+  document.getElementById('tracker-sub').textContent=`${days[realNow.getDay()]}, ${months[realNow.getMonth()]} ${realNow.getDate()}, ${realNow.getFullYear()}`;
+  const h=realNow.getHours();
   const gr=h<12?'Good morning':h<17?'Good afternoon':'Good evening';
 })();
 
@@ -1107,11 +1108,12 @@ function selChip(el,gid){
   autoSave();
 }
 function addTada(){
-  S.tadaN++;
   const list=document.getElementById('tada-list');
   const item=document.createElement('div'); item.className='tada-item';
   item.innerHTML=`<span>⭐</span><input class="tada-inp" placeholder="Another win..." oninput="countWins()">`;
   list.appendChild(item);
+  // Focus the new input
+  setTimeout(()=>{ const inputs=list.querySelectorAll('.tada-inp'); if(inputs.length) inputs[inputs.length-1].focus(); },50);
 }
 function countWins(){
   const inputs=document.querySelectorAll('#tada-list .tada-inp');
@@ -1120,24 +1122,39 @@ function countWins(){
   autoSave();
 }
 function autoSave(){
-  countWins();
-  const ev=[S.mo,S.mi,S.ni].filter(v=>v>0);
+  // Count wins inline — avoids circular call with countWins()
+  const tadaInputs=document.querySelectorAll('#tada-list .tada-inp');
+  let winCount=0; tadaInputs.forEach(i=>{if(i.value.trim())winCount++;});
+  const wcEl=document.getElementById('win-count');
+  if(wcEl) wcEl.textContent=winCount+(winCount===1?' win 🏆':' wins 🏆');
+
   const oc=document.querySelectorAll('.out-chk.ck').length;
-  const td=[...document.querySelectorAll('#tada-list .tada-inp')].filter(i=>i.value.trim()).length;
-  const s=calcScore(S.mo||0,S.mi||0,S.ni||0,S.mental,oc,td);
+  const s=calcScore(S.mo||0,S.mi||0,S.ni||0,S.mental,oc,winCount);
   S.cozy=s;
-  const disp=s?s.toFixed(1):'—';
-  ['sb-score','hdr-score','save-score'].forEach(id=>{try{const el=document.getElementById(id);if(el)el.textContent=disp;}catch(e){}});
-  if(s){
-    document.getElementById('sb-bar').style.width=(s/10*100)+'%';
+  const disp=s!==null?s.toFixed(1):'—';
+  ['sb-score','hdr-score','save-score'].forEach(id=>{
+    try{const el=document.getElementById(id);if(el)el.textContent=disp;}catch(e){}
+  });
+  if(s!==null){
+    const el=document.getElementById('sb-bar');
+    if(el) el.style.width=(s/10*100)+'%';
     const msgs={9:'Absolutely thriving! 🌟',7:'A great day! ✨',5:'Solid & steady 🌸',3:'Rest is productive 🌿',0:"Tomorrow's fresh start 🌙"};
     const key=Object.keys(msgs).reverse().find(k=>s>=Number(k));
-    document.getElementById('sb-msg').textContent=msgs[key]||'—';
+    const me=document.getElementById('sb-msg');
+    if(me) me.textContent=msgs[key]||'—';
   }
 }
 function saveDay(){
-  if(!S.cozy){showToast('Please log at least energy and one win first 🌸');return;}
-  const d=new Date(2026,3,19);
+  // Allow saving if at least energy OR one outcome OR one win is logged
+  const hasAnyData = S.mo>0 || S.mi>0 || S.ni>0 ||
+    document.querySelectorAll('.out-chk.ck').length>0 ||
+    [...document.querySelectorAll('#tada-list .tada-inp')].some(i=>i.value.trim());
+  if(!hasAnyData){showToast('Please fill in at least one field before saving 🌸');return;}
+  // Recalculate score fresh in case autoSave hasn't fired
+  const _oc=document.querySelectorAll('.out-chk.ck').length;
+  const _td=[...document.querySelectorAll('#tada-list .tada-inp')].filter(i=>i.value.trim()).length;
+  S.cozy=calcScore(S.mo||0,S.mi||0,S.ni||0,S.mental,_oc,_td);
+  const d=new Date();
   const outs=[1,2,3].map(i=>document.getElementById('o'+i)?.value||'');
   const outDone=[1,2,3].map(i=>document.getElementById('oc'+i)?.classList.contains('ck')||false);
   const tadaEls=[...document.querySelectorAll('#tada-list .tada-inp')];
