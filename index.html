@@ -1004,22 +1004,7 @@ let chartsBuilt=false; let charts={};
 // ═══════════════════════════════════════════════════════════
 // SEED DATA (14 days for demo if no real data)
 // ═══════════════════════════════════════════════════════════
-function seedData(){
-  const base=new Date(2026,3,5);
-  const raw=[[3,2,2,4,2,3,3,'Emotional'],[2,2,2,7,1,3,2,'Logical'],[4,4,3,5,2,3,4,'Logical'],
-    [4,4,3,4,3,3,5,'Instinct'],[5,4,3,3,2,3,4,'Logical'],[3,2,2,8,1,2,2,'Emotional'],
-    [2,2,1,9,0,2,1,'Emotional'],[3,3,2,6,2,3,3,'Logical'],[4,3,3,5,2,3,4,'Data-based'],
-    [5,4,4,4,3,3,6,'Logical'],[4,4,3,6,2,3,4,'Logical'],[3,3,2,5,2,3,3,'Instinct'],
-    [4,3,3,4,3,3,5,'Logical'],[4,4,3,4,3,3,5,'Data-based']];
-  return raw.map((r,i)=>{
-    const d=new Date(base); d.setDate(d.getDate()+i);
-    const score=calcScore(r[0],r[1],r[2],r[3],r[4],r[6]);
-    return {date:d.toISOString().split('T')[0],label:fmtDate(d),mo:r[0],mi:r[1],ni:r[2],
-      mental:r[3],outcomes:['','',''],outDone:[r[4]>=1,r[4]>=2,r[4]>=3],
-      outSet:3,outDone_n:r[4],tada:Array(r[6]).fill('win'),tada_n:r[6],
-      decType:r[7],score};
-  });
-}
+function seedData(){ return []; } // seed data removed
 function calcScore(mo,mi,ni,ml,oc,td){
   const ev=[mo,mi,ni].filter(v=>v>0);
   if(!ev.length&&!oc&&!td) return null;
@@ -1033,8 +1018,7 @@ function fmtDate(d){ const months=['Jan','Feb','Mar','Apr','May','Jun','Jul','Au
   return `${months[d.getMonth()]} ${d.getDate()}`; }
 
 function getHistory(){
-  const stored=store.getLogs();
-  return stored.length>=3 ? stored : [...seedData(),...stored];
+  return store.getLogs();
 }
 
 // ═══════════════════════════════════════════════════════════
@@ -1261,6 +1245,20 @@ function destroyCharts(){Object.values(charts).forEach(c=>c&&c.destroy());charts
 function buildCharts(){
   destroyCharts();
   const H=getHistory();
+  if(!H.length){
+    // Show empty state on all chart canvases
+    document.querySelectorAll('canvas').forEach(c=>{
+      const ctx=c.getContext('2d');
+      ctx.clearRect(0,0,c.width,c.height);
+      ctx.save();
+      ctx.fillStyle='#B0A0C0';
+      ctx.font='13px DM Sans, sans-serif';
+      ctx.textAlign='center';
+      ctx.fillText('No data yet — save your first log to see charts 🌸', c.width/2, 60);
+      ctx.restore();
+    });
+    return;
+  }
   const labels=H.map(d=>d.label||d.date);
   // Cozy score
   const cEl=document.getElementById('ch-cozy');
@@ -1299,18 +1297,37 @@ function buildCharts(){
     ]},options:{...BASE_OPT,plugins:{...BASE_OPT.plugins,legend:{position:'bottom',labels:{boxWidth:10,padding:12}}},scales:{...BASE_OPT.scales,y:{...BASE_OPT.scales.y,min:0,max:10,ticks:{stepSize:2}}}}});
   }
   // Heatmap
+  // Update stat cards from real data
+  const _scores=H.map(d=>d.score).filter(Boolean);
+  const _avgScore=_scores.length?(_scores.reduce((a,b)=>a+b,0)/_scores.length).toFixed(1):'—';
+  const _avgE=H.length?(H.reduce((a,d)=>a+(d.mo+d.mi+d.ni)/3,0)/H.length).toFixed(1):'—';
+  const _avgML=H.length?(H.reduce((a,d)=>a+d.mental,0)/H.length).toFixed(1):'—';
+  const _oc=H.length?Math.round(H.reduce((a,d)=>a+(d.outDone_n||0)/(d.outSet||3),0)/H.length*100)+'%':'—';
+  const _td=H.reduce((a,d)=>a+(d.tada_n||0),0)||'—';
+  const _setEl=(id,v)=>{const e=document.getElementById(id);if(e)e.textContent=v;};
+  _setEl('sv-cozy',_avgScore); _setEl('sv-e',_avgE); _setEl('sv-ml',_avgML);
+  _setEl('sv-oc',_oc); _setEl('sv-td',_td);
+
   const hm=document.getElementById('heatmap');
   if(hm){hm.innerHTML='';
-    const base=new Date(2026,3,1),start=base.getDay();
+    const now=new Date();
+    const yr=now.getFullYear(), mo=now.getMonth();
+    const base=new Date(yr,mo,1), daysInMonth=new Date(yr,mo+1,0).getDate();
+    const start=base.getDay();
+    const moStr=String(mo+1).padStart(2,'0');
+    const pad=n=>String(n).padStart(2,'0');
     for(let i=0;i<start;i++){const c=document.createElement('div');c.className='hc h0';c.style.opacity='.15';hm.appendChild(c);}
-    for(let d=0;d<30;d++){
+    for(let d=0;d<daysInMonth;d++){
       const c=document.createElement('div');
-      const dateStr=`2026-04-${String(d+1).padStart(2,'0')}`;
+      const dateStr=`${yr}-${moStr}-${pad(d+1)}`;
       const entry=H.find(h=>h.date===dateStr);
-      const s=entry?entry.score:(Math.random()*5+2);
       let cls='h0';
-      if(s>=8)cls='h5';else if(s>=6.5)cls='h4';else if(s>=5)cls='h3';else if(s>=3.5)cls='h2';else cls='h1';
-      c.className=`hc ${cls}`;c.textContent=d+1;c.title=`Apr ${d+1}: ${parseFloat(s).toFixed(1)}`;
+      if(entry){
+        const s=entry.score;
+        if(s>=8)cls='h5';else if(s>=6.5)cls='h4';else if(s>=5)cls='h3';else if(s>=3.5)cls='h2';else cls='h1';
+        c.title=`${yr}-${moStr}-${pad(d+1)}: ${s}`;
+      } else { c.title=`${yr}-${moStr}-${pad(d+1)}: not logged`; }
+      c.className=`hc ${cls}`;c.textContent=d+1;
       hm.appendChild(c);
     }
   }
@@ -1318,19 +1335,22 @@ function buildCharts(){
   const dbC=document.getElementById('dayBars');
   if(dbC){dbC.innerHTML='';
     const dayS=Array(7).fill(null).map(()=>[]);
-    H.forEach((d,i)=>{ const wday=(new Date(d.date||'2026-04-19')).getDay(); dayS[wday].push(d.score); });
+    H.forEach(d=>{ const wday=(new Date(d.date+'T00:00:00')).getDay(); if(d.score) dayS[wday].push(d.score); });
     const avgs=dayS.map(arr=>arr.length?parseFloat((arr.reduce((a,b)=>a+b,0)/arr.length).toFixed(1)):0);
     const cols=[LAV(.8),PEACH(.8),MINT(.8),MINT(1),SKY(1),BUTT(1),LAV(.8)];
     avgs.forEach((v,i)=>{
       const wrap=document.createElement('div');wrap.className='dbw';
       const bar=document.createElement('div');bar.className='db';
-      bar.style.height=Math.max((v/10*70),4)+'px';bar.style.background=cols[i];
-      bar.title=`${['Sun','Mon','Tue','Wed','Thu','Fri','Sat'][i]}: ${v}`;
+      bar.style.height=Math.max((v/10*70),4)+'px';bar.style.background=v?cols[i]:'#EEE';
+      bar.title=v?`${['Sun','Mon','Tue','Wed','Thu','Fri','Sat'][i]}: ${v}`:'No data yet';
       wrap.appendChild(bar);dbC.appendChild(wrap);
     });
-    const maxI=avgs.indexOf(Math.max(...avgs));
+    const nonZero=avgs.filter(Boolean);
     const bd=document.getElementById('best-day');
-    if(bd) bd.textContent=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'][maxI];
+    if(bd&&nonZero.length){
+      const maxI=avgs.indexOf(Math.max(...avgs));
+      bd.textContent=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'][maxI];
+    } else if(bd){ bd.textContent='Log more days to see'; }
   }
   // Decision donut
   const ddEl=document.getElementById('ch-dec-donut');
@@ -1487,6 +1507,11 @@ function setPeriod(days,btn){
 // ═══════════════════════════════════════════════════════════
 function refreshInsights(){
   const H=getHistory();
+  if(!H.length){
+    const el=document.getElementById('insights-list');
+    if(el) el.innerHTML="<div class='ic ic-l'><div class='ic-hd'><span class='ic-em'>📊</span><div class='ic-title'>No data yet</div></div><div class='ic-body'>Save your first day's log to start building personalised insights. Just 7 days of logging unlocks meaningful patterns.</div></div>";
+    return;
+  }
   if(H.length<3){return;}
   const el=document.getElementById('insights-list');if(!el)return;
   const avgE=H.reduce((a,d)=>a+(d.mo+d.mi+d.ni)/3,0)/H.length;
