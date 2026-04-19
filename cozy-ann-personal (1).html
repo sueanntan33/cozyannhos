@@ -1,0 +1,1666 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cozy Ann ✨ Personal OS</title>
+<meta name="description" content="Your personal productivity and wellness operating system">
+<meta name="theme-color" content="#2E2040">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Cozy Ann">
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+
+:root{
+  --p:#FFD6C0;--pm:#FFBFA0;--pd:#E8916A;--px:#C4673E;
+  --l:#EAD9FF;--lm:#CDB8F5;--ld:#9B72D0;--lx:#6E44A8;
+  --m:#C6F0E2;--mm:#9FE0C8;--md:#4DB89A;--mx:#2E8A72;
+  --s:#C8E8FF;--sm:#9ED0F5;--sd:#4A9ED4;--sx:#2276A8;
+  --b:#FFF0B0;--bm:#FFE070;--bd:#D4A800;--bx:#A07800;
+  --r:#FFD6E4;--rd:#E06090;
+  --cream:#FFFAF5;--paper:#fff;
+  --dark:#2E2040;--mid:#6A5878;--light:#B0A0C0;--lighter:#DDD0E8;
+  --sh:0 2px 20px rgba(110,68,168,.09);--sh2:0 8px 40px rgba(110,68,168,.18);
+  --rr:18px;--rs:10px;--sw:230px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--dark);min-height:100vh;display:flex;
+  background-image:radial-gradient(ellipse at 0% 0%,rgba(255,214,192,.4) 0%,transparent 50%),
+    radial-gradient(ellipse at 100% 0%,rgba(234,217,255,.4) 0%,transparent 50%),
+    radial-gradient(ellipse at 50% 100%,rgba(198,240,226,.3) 0%,transparent 50%);}
+
+/* SIDEBAR */
+.sb{width:var(--sw);min-height:100vh;background:var(--dark);display:flex;flex-direction:column;
+  position:fixed;left:0;top:0;bottom:0;z-index:100;overflow-y:auto;transition:transform .3s;}
+.sb-logo{padding:24px 20px 20px;border-bottom:1px solid rgba(255,255,255,.08);}
+.sb-logo h2{font-family:'Caveat',cursive;font-size:26px;font-weight:700;
+  background:linear-gradient(135deg,var(--pm),var(--lm));-webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;background-clip:text;line-height:1.1;}
+.sb-logo p{font-size:10px;color:rgba(255,255,255,.35);margin-top:3px;letter-spacing:.5px;}
+.sb-date{margin:14px 16px 4px;background:rgba(255,255,255,.06);border-radius:12px;padding:10px 14px;}
+.sb-date .sbd-day{font-size:10px;color:rgba(255,255,255,.45);font-weight:500;}
+.sb-date .sbd-date{font-family:'Caveat',cursive;font-size:19px;color:#fff;font-weight:700;line-height:1.2;}
+.sb-sec{padding:14px 12px 3px;font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.28);}
+.nav{display:flex;align-items:center;gap:10px;padding:9px 16px;margin:2px 8px;border-radius:12px;
+  cursor:pointer;transition:all .2s;font-size:13px;font-weight:500;color:rgba(255,255,255,.52);
+  border:none;background:transparent;width:calc(100% - 16px);text-align:left;}
+.nav:hover{background:rgba(255,255,255,.07);color:rgba(255,255,255,.85);}
+.nav.on{background:rgba(255,255,255,.12);color:#fff;font-weight:600;}
+.nav-ic{font-size:16px;flex-shrink:0;width:20px;text-align:center;}
+.nav-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;opacity:.3;margin-left:auto;}
+.nav.on .nav-dot{opacity:1;}
+.sb-score{margin:auto 14px 16px;background:rgba(255,255,255,.07);border-radius:14px;padding:14px 16px;}
+.sb-score .ssl{font-size:9px;color:rgba(255,255,255,.38);font-weight:700;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px;}
+.sb-score .ssn{font-family:'Caveat',cursive;font-size:40px;font-weight:700;color:#fff;line-height:1;}
+.sb-score .ssm{font-size:11px;color:rgba(255,255,255,.38);margin-top:2px;}
+.sb-score .ssb{height:4px;background:rgba(255,255,255,.1);border-radius:2px;margin-top:10px;overflow:hidden;}
+.sb-score .ssf{height:100%;background:linear-gradient(90deg,var(--md),var(--ld));border-radius:2px;transition:width .6s cubic-bezier(.34,1.56,.64,1);}
+.sb-streak{display:flex;align-items:center;gap:6px;margin-top:8px;padding-top:8px;border-top:1px solid rgba(255,255,255,.08);}
+.sb-streak span{font-size:10px;color:rgba(255,255,255,.38);}
+.sb-streak strong{font-size:12px;color:var(--bm);font-weight:700;}
+
+/* CONTENT */
+.content{margin-left:var(--sw);flex:1;min-height:100vh;}
+.ph{padding:24px 30px 18px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;
+  position:sticky;top:0;background:rgba(255,250,245,.92);backdrop-filter:blur(14px);z-index:50;
+  border-bottom:1px solid var(--lighter);}
+.ph-eyebrow{font-size:9px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:var(--ld);margin-bottom:3px;}
+.ph-title{font-family:'Caveat',cursive;font-size:26px;font-weight:700;color:var(--dark);line-height:1.1;}
+.ph-sub{font-size:11px;color:var(--mid);margin-top:1px;}
+
+/* PAGES */
+.pg{display:none;padding:22px 30px 60px;animation:fadeUp .35s ease both;}
+.pg.on{display:block;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(12px);}to{opacity:1;transform:none;}}
+
+/* CARDS */
+.card{background:var(--paper);border-radius:var(--rr);padding:22px 24px;box-shadow:var(--sh);
+  position:relative;overflow:hidden;transition:box-shadow .2s;}
+.card:hover{box-shadow:var(--sh2);}
+.ca{position:absolute;top:0;left:0;right:0;height:3px;border-radius:var(--rr) var(--rr) 0 0;}
+.ca-p{background:linear-gradient(90deg,var(--pm),var(--pd));}
+.ca-l{background:linear-gradient(90deg,var(--lm),var(--ld));}
+.ca-m{background:linear-gradient(90deg,var(--mm),var(--md));}
+.ca-s{background:linear-gradient(90deg,var(--sm),var(--sd));}
+.ca-b{background:linear-gradient(90deg,var(--bm),var(--bd));}
+.card-hd{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:15px;}
+.card-em{font-size:20px;margin-bottom:3px;display:block;}
+.card-title{font-family:'Caveat',cursive;font-size:20px;font-weight:700;color:var(--dark);}
+.card-sub{font-size:11px;color:var(--mid);margin-top:1px;}
+.chip{font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;padding:4px 10px;border-radius:20px;white-space:nowrap;}
+.ch-p{background:var(--p);color:var(--px);} .ch-l{background:var(--l);color:var(--lx);}
+.ch-m{background:var(--m);color:var(--mx);} .ch-s{background:var(--s);color:var(--sx);}
+.ch-b{background:var(--b);color:var(--bx);} .ch-dk{background:var(--dark);color:#fff;}
+
+/* GRIDS */
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+.g3{display:grid;grid-template-columns:2fr 1fr;gap:16px;}
+.g1{display:grid;grid-template-columns:1fr;gap:16px;}
+@media(max-width:780px){.g2,.g3{grid-template-columns:1fr;}}
+
+/* FLOW DIVIDERS */
+.flow-row{display:flex;align-items:center;gap:12px;margin:26px 0 14px;}
+.flow-ic{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0;}
+.fi-mo{background:linear-gradient(135deg,var(--p),var(--b));}
+.fi-mi{background:linear-gradient(135deg,var(--b),var(--m));}
+.fi-ni{background:linear-gradient(135deg,var(--l),var(--s));}
+.flow-title{font-family:'Caveat',cursive;font-size:22px;font-weight:700;color:var(--dark);}
+.flow-badge{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;
+  padding:3px 10px;border-radius:20px;background:rgba(0,0,0,.05);color:var(--mid);}
+.flow-line{flex:1;height:1px;background:linear-gradient(90deg,var(--lighter),transparent);}
+
+/* TRACKER INPUTS */
+.e-row{display:flex;gap:7px;margin-top:8px;}
+.e-btn{flex:1;height:40px;border:2px solid var(--pm);border-radius:var(--rs);background:#fff;
+  font-family:'DM Sans',sans-serif;font-size:12px;font-weight:700;color:var(--pd);
+  cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:3px;}
+.e-btn:hover,.e-btn.on{background:var(--pd);border-color:var(--pd);color:#fff;transform:scale(1.05);box-shadow:0 4px 12px rgba(232,145,106,.35);}
+.e-labels{display:flex;justify-content:space-between;margin-top:5px;font-size:9px;color:var(--light);font-weight:600;}
+.sl-track{position:relative;height:8px;background:var(--l);border-radius:10px;margin:10px 0;}
+.sl-fill{height:100%;background:linear-gradient(90deg,var(--md),var(--ld));border-radius:10px;transition:width .3s;pointer-events:none;}
+input[type=range]{position:absolute;top:50%;left:0;width:100%;transform:translateY(-50%);
+  -webkit-appearance:none;appearance:none;background:transparent;cursor:pointer;height:20px;}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;height:22px;border-radius:50%;
+  background:#fff;border:3px solid var(--ld);box-shadow:0 2px 8px rgba(155,114,208,.3);transition:all .2s;}
+.ml-big{text-align:center;margin-top:10px;}
+.ml-num{font-family:'Caveat',cursive;font-size:44px;font-weight:700;line-height:1;}
+.ml-stat{font-size:12px;font-weight:600;margin-top:2px;}
+.sl-nums{display:flex;justify-content:space-between;font-size:8px;color:var(--light);font-weight:700;}
+.out-item{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:var(--rs);
+  background:var(--m);margin-bottom:7px;border:2px solid transparent;transition:border-color .2s;}
+.out-item:focus-within{border-color:var(--md);}
+.out-num{width:22px;height:22px;border-radius:50%;background:var(--md);color:#fff;font-size:11px;
+  font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.out-inp{flex:1;border:none;background:transparent;font-family:'DM Sans',sans-serif;font-size:13px;
+  color:var(--dark);outline:none;font-weight:500;}
+.out-inp::placeholder{color:var(--md);opacity:.6;}
+.out-chk{width:20px;height:20px;border:2px solid var(--md);border-radius:50%;cursor:pointer;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;font-size:10px;transition:all .2s;}
+.out-chk.ck{background:var(--md);color:#fff;border-color:var(--md);}
+textarea.bdump{width:100%;border:none;border-radius:var(--rs);padding:12px 14px;font-family:'DM Sans',sans-serif;
+  font-size:13px;color:var(--dark);outline:none;resize:none;min-height:68px;font-weight:500;
+  transition:box-shadow .2s;line-height:1.6;}
+textarea.bdump:focus{box-shadow:0 0 0 3px rgba(155,114,208,.2);}
+.bd-l{background:var(--l);} .bd-p{background:var(--p);}
+.dec-box{background:var(--s);border-radius:var(--rs);padding:12px;margin-bottom:8px;
+  border:2px solid transparent;transition:border-color .2s;}
+.dec-box:focus-within{border-color:var(--sd);}
+.dec-lbl{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--sd);margin-bottom:5px;}
+.dec-inp{width:100%;border:none;background:transparent;font-family:'DM Sans',sans-serif;
+  font-size:13px;color:var(--dark);outline:none;resize:none;min-height:34px;font-weight:500;}
+.dec-inp::placeholder{color:var(--sd);opacity:.5;}
+.tchips{display:flex;gap:6px;flex-wrap:wrap;}
+.tchip{padding:4px 12px;border-radius:20px;font-size:11px;font-weight:700;cursor:pointer;
+  border:2px solid var(--sm);background:#fff;color:var(--sd);transition:all .2s;}
+.tchip.on{background:var(--sd);color:#fff;border-color:var(--sd);}
+.tada-item{display:flex;align-items:center;gap:8px;padding:8px 12px;background:var(--b);
+  border-radius:var(--rs);margin-bottom:6px;animation:popIn .3s ease;}
+@keyframes popIn{from{transform:scale(.85);opacity:0;}to{transform:scale(1);opacity:1;}}
+.tada-inp{flex:1;border:none;background:transparent;font-family:'DM Sans',sans-serif;
+  font-size:13px;color:var(--dark);outline:none;font-weight:500;}
+.tada-inp::placeholder{color:var(--bd);opacity:.6;}
+.add-btn{display:flex;align-items:center;justify-content:center;gap:6px;padding:8px 16px;
+  border-radius:20px;border:2px dashed var(--bd);background:transparent;font-family:'DM Sans',sans-serif;
+  font-size:12px;font-weight:700;color:var(--bd);cursor:pointer;transition:all .2s;width:100%;margin-top:6px;}
+.add-btn:hover{background:var(--b);border-style:solid;}
+.rc-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:10px;}
+.rc-item{display:flex;align-items:center;gap:7px;padding:8px 10px;background:var(--p);
+  border-radius:var(--rs);font-size:12px;font-weight:600;color:var(--dark);cursor:pointer;
+  transition:all .2s;border:2px solid transparent;}
+.rc-item:hover,.rc-item.used{border-color:var(--pd);background:var(--pm);}
+
+/* SAVE BAR */
+.save-bar{position:sticky;bottom:0;background:rgba(255,250,245,.95);backdrop-filter:blur(12px);
+  padding:14px 30px;border-top:1px solid var(--lighter);display:flex;align-items:center;
+  justify-content:space-between;gap:12px;flex-wrap:wrap;margin:0 -30px -60px;z-index:30;}
+.save-msg{font-size:12px;color:var(--mid);}
+.btn-save{padding:11px 26px;border-radius:40px;border:none;
+  background:linear-gradient(135deg,var(--pd),var(--ld));color:#fff;
+  font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;cursor:pointer;
+  box-shadow:0 4px 16px rgba(155,114,208,.3);transition:all .2s;}
+.btn-save:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(155,114,208,.4);}
+
+/* TOAST */
+.toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%) translateY(20px);
+  background:var(--dark);color:#fff;padding:12px 24px;border-radius:40px;
+  font-size:13px;font-weight:600;opacity:0;transition:all .4s;z-index:200;pointer-events:none;}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+
+/* STAT CARDS */
+.stat-row{display:grid;grid-template-columns:repeat(auto-fill,minmax(145px,1fr));gap:12px;margin-bottom:18px;}
+.stat{background:var(--paper);border-radius:var(--rr);padding:16px 18px;box-shadow:var(--sh);
+  position:relative;overflow:hidden;transition:all .2s;}
+.stat:hover{transform:translateY(-3px);box-shadow:var(--sh2);}
+.stat::after{content:'';position:absolute;bottom:-18px;right:-18px;width:60px;height:60px;border-radius:50%;opacity:.15;}
+.sp::after{background:var(--pd);} .sl::after{background:var(--ld);}
+.sm::after{background:var(--md);} .ss::after{background:var(--sd);}
+.sb2::after{background:var(--bd);} .sr::after{background:var(--rd);}
+.stat-ic{font-size:18px;margin-bottom:6px;display:block;}
+.stat-v{font-family:'Caveat',cursive;font-size:34px;font-weight:700;line-height:1;margin-bottom:2px;}
+.stat-l{font-size:11px;font-weight:600;color:var(--mid);}
+.stat-d{font-size:10px;font-weight:600;margin-top:4px;padding:2px 8px;border-radius:10px;display:inline-block;}
+.du{background:var(--m);color:var(--mx);} .dd{background:var(--r);color:var(--rd);} .df{background:var(--b);color:var(--bx);}
+
+/* CHART CARDS */
+.cc{background:var(--paper);border-radius:var(--rr);padding:22px 24px;box-shadow:var(--sh);transition:box-shadow .2s;}
+.cc:hover{box-shadow:var(--sh2);}
+.cc-hd{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:14px;}
+.cc-em{font-size:18px;margin-bottom:3px;display:block;}
+.cc-title{font-family:'Caveat',cursive;font-size:20px;font-weight:700;color:var(--dark);}
+.cc-sub{font-size:11px;color:var(--mid);margin-top:1px;}
+.pills{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;}
+.pill{display:flex;align-items:center;gap:5px;padding:5px 11px;border-radius:20px;font-size:11px;font-weight:500;}
+.pm2{background:var(--m);color:var(--mx);} .pp2{background:var(--p);color:var(--px);}
+.pl2{background:var(--l);color:var(--lx);} .pb2{background:var(--b);color:var(--bx);}
+.ps2{background:var(--s);color:var(--sx);}
+
+/* HEATMAP */
+.hm-lbl{display:grid;grid-template-columns:repeat(7,1fr);gap:2px;margin-bottom:4px;}
+.hml{font-size:9px;font-weight:700;color:var(--light);text-align:center;letter-spacing:.5px;}
+.hm-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:5px;}
+.hc{aspect-ratio:1;border-radius:6px;border:1.5px solid var(--lighter);display:flex;align-items:center;
+  justify-content:center;font-size:9px;font-weight:700;cursor:pointer;transition:all .15s;}
+.hc:hover{transform:scale(1.15);z-index:2;box-shadow:0 4px 12px rgba(0,0,0,.12);}
+.h0{background:#fff;color:var(--lighter);} .h1{background:#FFE8DC;color:#C4673E;}
+.h2{background:#FFD6C0;color:#C4673E;} .h3{background:#FFD0B0;color:#A04020;}
+.h4{background:#C8FFEC;color:#2E8A72;} .h5{background:#A0EED4;color:#1A6A52;}
+
+/* DAY BARS */
+.dbars{display:flex;gap:8px;align-items:flex-end;height:70px;margin:10px 0;}
+.dbw{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;}
+.db{width:100%;border-radius:6px 6px 0 0;cursor:pointer;transition:opacity .2s;}
+.db:hover{opacity:.8;}
+.dbl{font-size:9px;font-weight:700;color:var(--light);letter-spacing:.5px;text-transform:uppercase;}
+
+/* MATRIX */
+.mx-grid{display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;gap:10px;height:320px;}
+.mq{border-radius:14px;padding:14px 16px;overflow:hidden;}
+.mq-do{background:linear-gradient(135deg,var(--m),var(--mm));}
+.mq-sc{background:linear-gradient(135deg,var(--s),var(--sm));}
+.mq-dl{background:linear-gradient(135deg,var(--b),var(--bm));}
+.mq-el{background:linear-gradient(135deg,var(--p),var(--pm));}
+.mq-title{font-family:'Caveat',cursive;font-size:16px;font-weight:700;color:var(--dark);margin-bottom:2px;}
+.mq-sub{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--mid);margin-bottom:8px;}
+.mq-desc{font-size:11px;color:var(--dark);line-height:1.5;opacity:.8;}
+.mq-items{margin-top:8px;max-height:90px;overflow-y:auto;}
+.mq-item{display:flex;align-items:center;gap:5px;padding:4px 8px;background:rgba(255,255,255,.65);
+  border-radius:7px;margin-bottom:4px;font-size:11px;font-weight:500;cursor:pointer;}
+.mq-item:hover{background:rgba(255,255,255,.9);}
+.mq-dot{width:5px;height:5px;border-radius:50%;flex-shrink:0;}
+.mq-rm{margin-left:auto;font-size:10px;opacity:.4;}
+.mx-ax{display:flex;justify-content:space-between;font-size:9px;font-weight:700;
+  color:var(--mid);text-transform:uppercase;letter-spacing:1px;margin-top:6px;padding:0 2px;}
+.mx-input-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;}
+.mx-inp{flex:1;min-width:150px;padding:9px 13px;border-radius:10px;border:1.5px solid var(--lm);
+  font-family:'DM Sans',sans-serif;font-size:13px;outline:none;background:#fff;color:var(--dark);}
+.mx-sel{padding:9px 13px;border-radius:10px;border:1.5px solid var(--lm);font-family:'DM Sans',sans-serif;
+  font-size:13px;background:#fff;color:var(--dark);outline:none;}
+.btn-add{padding:9px 20px;border-radius:10px;border:none;background:var(--ld);color:#fff;
+  font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;transition:all .2s;}
+.btn-add:hover{background:var(--lx);}
+
+/* INSIGHT CARDS */
+.ic{background:var(--paper);border-radius:var(--rr);padding:18px 20px;box-shadow:var(--sh);
+  margin-bottom:12px;border-left:4px solid transparent;transition:all .2s;}
+.ic:hover{transform:translateX(3px);box-shadow:var(--sh2);}
+.ic-m{border-color:var(--md);} .ic-l{border-color:var(--ld);}
+.ic-p{border-color:var(--pd);} .ic-s{border-color:var(--sd);} .ic-b{border-color:var(--bd);}
+.ic-hd{display:flex;align-items:center;gap:10px;margin-bottom:7px;}
+.ic-em{font-size:18px;} .ic-title{font-family:'Caveat',cursive;font-size:18px;font-weight:700;}
+.ic-body{font-size:13px;color:var(--mid);line-height:1.65;}
+.ic-act{margin-top:8px;padding:6px 12px;border-radius:10px;font-size:11px;font-weight:600;display:inline-block;}
+
+/* HISTORY */
+.hist-log{background:var(--paper);border-radius:14px;padding:16px 18px;box-shadow:var(--sh);
+  margin-bottom:10px;cursor:pointer;transition:all .2s;border-left:4px solid var(--lm);}
+.hist-log:hover{box-shadow:var(--sh2);transform:translateX(3px);}
+.hl-row{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+.hl-date{font-family:'Caveat',cursive;font-size:18px;font-weight:700;color:var(--dark);}
+.hl-score{font-family:'Caveat',cursive;font-size:28px;font-weight:700;}
+.hl-chips{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap;}
+.hl-chip{padding:3px 10px;border-radius:20px;font-size:10px;font-weight:600;}
+.hl-detail{margin-top:12px;padding-top:12px;border-top:1px solid var(--lighter);display:none;}
+.hl-detail.open{display:block;}
+.empty-hist{text-align:center;padding:48px 20px;color:var(--light);}
+.empty-hist .em-ic{font-size:40px;margin-bottom:12px;}
+.empty-hist p{font-size:14px;font-weight:500;}
+
+/* BURNOUT */
+.bq-intro{background:var(--dark);border-radius:var(--rr);padding:28px;text-align:center;margin-bottom:24px;}
+.bq-intro h2{font-family:'Caveat',cursive;font-size:28px;font-weight:700;color:var(--pm);margin-bottom:8px;}
+.bq-intro p{font-size:13px;color:rgba(255,255,255,.65);line-height:1.6;max-width:500px;margin:0 auto 16px;}
+.bq-start{padding:12px 30px;border-radius:40px;border:none;
+  background:linear-gradient(135deg,var(--pd),var(--ld));color:#fff;
+  font-family:'DM Sans',sans-serif;font-size:14px;font-weight:700;cursor:pointer;
+  box-shadow:0 4px 20px rgba(155,114,208,.4);transition:all .2s;}
+.bq-start:hover{transform:translateY(-2px);box-shadow:0 8px 28px rgba(155,114,208,.5);}
+.bq-progress{background:var(--paper);border-radius:14px;padding:14px 20px;box-shadow:var(--sh);
+  margin-bottom:20px;display:none;}
+.bq-progress.show{display:block;}
+.bqp-row{display:flex;align-items:center;gap:12px;}
+.bqp-bar{flex:1;height:8px;background:var(--lighter);border-radius:4px;overflow:hidden;}
+.bqp-fill{height:100%;background:linear-gradient(90deg,var(--md),var(--ld));border-radius:4px;transition:width .4s;}
+.bq-form{display:none;}
+.bq-form.show{display:block;}
+.bq-section{margin-bottom:22px;}
+.bqs-hd{display:flex;align-items:center;gap:12px;padding:12px 16px;border-radius:14px;margin-bottom:12px;}
+.bqs-em{font-size:22px;flex-shrink:0;}
+.bqs-title{font-family:'Caveat',cursive;font-size:20px;font-weight:700;}
+.bqs-sub{font-size:11px;font-weight:600;opacity:.7;margin-top:1px;}
+.bq-item{background:var(--paper);border-radius:14px;padding:16px 20px;margin-bottom:10px;box-shadow:var(--sh);}
+.bqi-num{font-size:10px;font-weight:700;color:var(--light);letter-spacing:.5px;margin-bottom:6px;}
+.bqi-q{font-size:14px;font-weight:500;color:var(--dark);margin-bottom:12px;line-height:1.5;}
+.likert{display:flex;gap:6px;}
+.lb{flex:1;padding:10px 4px;border-radius:10px;border:2px solid var(--lighter);background:#fff;
+  font-family:'DM Sans',sans-serif;font-size:11px;font-weight:600;color:var(--light);
+  cursor:pointer;transition:all .2s;text-align:center;display:flex;flex-direction:column;align-items:center;gap:2px;}
+.lb .lem{font-size:15px;} .lb .llb{font-size:8px;letter-spacing:.3px;}
+.lb:hover{transform:translateY(-2px);}
+.lb.on{border-color:currentColor;color:#fff;transform:translateY(-2px);box-shadow:0 4px 12px rgba(0,0,0,.12);}
+.lb[data-v="1"].on{background:#E8916A;border-color:#E8916A;}
+.lb[data-v="2"].on{background:#D4A800;border-color:#D4A800;}
+.lb[data-v="3"].on{background:#4A9ED4;border-color:#4A9ED4;}
+.lb[data-v="4"].on{background:#4DB89A;border-color:#4DB89A;}
+.lb[data-v="5"].on{background:#9B72D0;border-color:#9B72D0;}
+.bq-submit{display:none;text-align:center;margin-top:24px;}
+.bq-submit.show{display:block;}
+.bq-results{display:none;animation:fadeUp .5s ease;}
+.bq-results.show{display:block;}
+.score-hero{border-radius:var(--rr);padding:32px;text-align:center;margin-bottom:20px;position:relative;overflow:hidden;}
+.score-hero::before{content:'';position:absolute;top:-30px;right:-30px;width:120px;height:120px;border-radius:50%;opacity:.12;background:#fff;}
+.sh-num{font-family:'Caveat',cursive;font-size:80px;font-weight:700;line-height:1;color:#fff;}
+.sh-tot{font-size:16px;color:rgba(255,255,255,.55);font-weight:600;}
+.sh-band{font-family:'Caveat',cursive;font-size:26px;font-weight:700;color:#fff;margin-top:6px;}
+.sh-desc{font-size:13px;color:rgba(255,255,255,.75);margin-top:8px;line-height:1.6;max-width:460px;margin-left:auto;margin-right:auto;}
+.dim-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px;}
+@media(max-width:700px){.dim-grid{grid-template-columns:1fr;}}
+.dim-card{background:var(--paper);border-radius:var(--rr);padding:16px 18px;box-shadow:var(--sh);}
+.dim-hd{display:flex;align-items:center;gap:10px;margin-bottom:10px;}
+.dim-em{font-size:20px;} .dim-title{font-family:'Caveat',cursive;font-size:17px;font-weight:700;}
+.dim-bar-wrap{height:8px;background:var(--lighter);border-radius:4px;overflow:hidden;margin-bottom:4px;}
+.dim-bar{height:100%;border-radius:4px;transition:width .8s cubic-bezier(.34,1.56,.64,1);}
+.dim-nums{display:flex;justify-content:space-between;font-size:10px;color:var(--mid);font-weight:600;}
+.advice-card{border-radius:var(--rr);padding:20px 22px;margin-bottom:14px;}
+.ac-em{font-size:24px;margin-bottom:8px;display:block;}
+.ac-title{font-family:'Caveat',cursive;font-size:20px;font-weight:700;color:var(--dark);margin-bottom:6px;}
+.ac-text{font-size:13px;color:var(--mid);line-height:1.65;}
+.ex-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:14px;}
+@media(max-width:700px){.ex-grid{grid-template-columns:1fr;}}
+.ex-card{background:var(--paper);border-radius:14px;padding:16px 18px;box-shadow:var(--sh);}
+.ex-hd{display:flex;align-items:center;gap:10px;margin-bottom:8px;}
+.ex-em{font-size:22px;} .ex-title{font-family:'Caveat',cursive;font-size:16px;font-weight:700;}
+.ex-time{font-size:10px;font-weight:700;padding:3px 8px;border-radius:10px;margin-left:auto;}
+.ex-body{font-size:12px;color:var(--mid);line-height:1.6;}
+.book-row{display:flex;gap:12px;flex-direction:column;margin-top:14px;}
+.book-item{background:var(--paper);border-radius:14px;padding:14px 16px;box-shadow:var(--sh);
+  display:flex;align-items:flex-start;gap:12px;}
+.book-spine{width:8px;border-radius:4px;flex-shrink:0;align-self:stretch;}
+.book-title{font-weight:700;font-size:13px;color:var(--dark);}
+.book-author{font-size:11px;color:var(--mid);margin-top:2px;}
+.book-why{font-size:11px;color:var(--mid);margin-top:6px;line-height:1.5;}
+.burnout-hist{margin-top:24px;}
+.bh-item{background:var(--paper);border-radius:12px;padding:12px 16px;box-shadow:var(--sh);
+  margin-bottom:8px;display:flex;align-items:center;justify-content:space-between;}
+.bh-date{font-size:12px;color:var(--mid);font-weight:600;}
+.bh-score{font-family:'Caveat',cursive;font-size:24px;font-weight:700;}
+
+/* LIBRARY */
+.lib-section{margin-bottom:32px;}
+.lib-title{font-family:'Caveat',cursive;font-size:22px;font-weight:700;color:var(--dark);margin-bottom:14px;}
+
+/* PERIOD TABS */
+.ptabs{display:flex;gap:4px;background:var(--paper);padding:4px;border-radius:12px;box-shadow:var(--sh);}
+.pt{padding:6px 14px;border:none;background:transparent;border-radius:8px;font-family:'DM Sans',sans-serif;
+  font-size:12px;font-weight:600;color:var(--mid);cursor:pointer;transition:all .2s;}
+.pt.on{background:var(--dark);color:#fff;box-shadow:0 2px 8px rgba(46,32,64,.3);}
+
+/* RADAR WRAPPER */
+.radar-wrap{max-width:360px;margin:0 auto;}
+
+/* CORR BADGE */
+.corr-b{display:inline-flex;align-items:center;gap:7px;padding:9px 14px;border-radius:20px;font-size:12px;font-weight:600;}
+
+/* SCROLLBAR */
+::-webkit-scrollbar{width:6px;} ::-webkit-scrollbar-track{background:var(--cream);}
+::-webkit-scrollbar-thumb{background:var(--lm);border-radius:3px;}
+
+/* EXPORT BTN */
+.exp-btn{padding:8px 18px;border-radius:40px;border:2px solid var(--lm);background:transparent;
+  font-family:'DM Sans',sans-serif;font-size:12px;font-weight:700;color:var(--ld);cursor:pointer;transition:all .2s;}
+.exp-btn:hover{background:var(--l);}
+
+/* PERIOD SELECTOR (analytics header) */
+.hdr-actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap;}
+
+</style>
+</head>
+<body>
+
+<nav class="sb" id="sidebar">
+  <div class="sb-logo">
+    <h2>Cozy Ann ✨</h2>
+    <p>Personal Human Operating System</p>
+  </div>
+  <div class="sb-date">
+    <div class="sbd-day" id="sb-day">Sunday</div>
+    <div class="sbd-date" id="sb-date">April 19, 2026</div>
+  </div>
+
+  <div class="sb-sec">Daily</div>
+  <button class="nav on" onclick="go('tracker',this)">
+    <span class="nav-ic">📋</span> Today's Log
+    <div class="nav-dot" style="background:var(--pd);"></div>
+  </button>
+  <button class="nav" onclick="go('history',this)">
+    <span class="nav-ic">📖</span> History
+    <div class="nav-dot" style="background:var(--lm);"></div>
+  </button>
+
+  <div class="sb-sec">Analytics</div>
+  <button class="nav" onclick="go('overview',this)">
+    <span class="nav-ic">🏠</span> Overview
+    <div class="nav-dot" style="background:var(--lm);"></div>
+  </button>
+  <button class="nav" onclick="go('energy',this)">
+    <span class="nav-ic">⚡</span> Energy Trends
+    <div class="nav-dot" style="background:var(--pm);"></div>
+  </button>
+  <button class="nav" onclick="go('mental',this)">
+    <span class="nav-ic">🧠</span> Mental Load
+    <div class="nav-dot" style="background:var(--lm);"></div>
+  </button>
+  <button class="nav" onclick="go('outcomes',this)">
+    <span class="nav-ic">🎯</span> Outcomes
+    <div class="nav-dot" style="background:var(--mm);"></div>
+  </button>
+  <button class="nav" onclick="go('decisions',this)">
+    <span class="nav-ic">🧩</span> Decisions
+    <div class="nav-dot" style="background:var(--sm);"></div>
+  </button>
+  <button class="nav" onclick="go('matrix',this)">
+    <span class="nav-ic">📐</span> Decision Matrix
+    <div class="nav-dot" style="background:var(--bm);"></div>
+  </button>
+  <button class="nav" onclick="go('insights',this)">
+    <span class="nav-ic">💡</span> Insights
+    <div class="nav-dot" style="background:var(--lm);"></div>
+  </button>
+
+  <div class="sb-sec">Wellness</div>
+  <button class="nav" onclick="go('burnout',this)">
+    <span class="nav-ic">🔥</span> Burnout Check
+    <div class="nav-dot" style="background:var(--rd);"></div>
+  </button>
+  <button class="nav" onclick="go('library',this)">
+    <span class="nav-ic">📚</span> Library
+    <div class="nav-dot" style="background:var(--mm);"></div>
+  </button>
+
+  <div class="sb-score">
+    <div class="ssl">Today's Cozy Score</div>
+    <div class="ssn" id="sb-score">—</div>
+    <div class="ssm" id="sb-msg">Log your day to begin</div>
+    <div class="ssb"><div class="ssf" id="sb-bar" style="width:0%"></div></div>
+    <div class="sb-streak">
+      <span>🔥 Streak:</span>
+      <strong id="sb-streak">0 days</strong>
+    </div>
+  </div>
+</nav>
+
+<div class="content">
+
+<div class="pg on" id="pg-tracker">
+  <div class="ph">
+    <div>
+      <div class="ph-eyebrow">📋 Daily OS</div>
+      <div class="ph-title">Today's Log</div>
+      <div class="ph-sub" id="tracker-sub">Sunday, April 19, 2026</div>
+    </div>
+    <div class="hdr-actions">
+      <div style="font-size:11px;color:var(--mid);font-weight:500;">Score: <strong id="hdr-score" style="color:var(--ld)">—</strong></div>
+      <button class="exp-btn" onclick="exportData()">⬇ Export Data</button>
+    </div>
+  </div>
+
+  <!-- MORNING -->
+  <div class="flow-row">
+    <div class="flow-ic fi-mo">☀️</div>
+    <div class="flow-title">Morning</div>
+    <div class="flow-badge">3 min</div>
+    <div class="flow-line"></div>
+  </div>
+  <div class="g2">
+    <div class="card"><div class="ca ca-p"></div>
+      <div class="card-hd"><div><span class="card-em">⚡</span><div class="card-title">Energy Map</div><div class="card-sub">How's your energy right now?</div></div><div class="chip ch-p">MORNING</div></div>
+      <div class="e-row" id="mo-e">
+        <button class="e-btn" onclick="setE('mo',1,this)">😴 1</button>
+        <button class="e-btn" onclick="setE('mo',2,this)">😪 2</button>
+        <button class="e-btn" onclick="setE('mo',3,this)">😊 3</button>
+        <button class="e-btn" onclick="setE('mo',4,this)">😄 4</button>
+        <button class="e-btn" onclick="setE('mo',5,this)">🔥 5</button>
+      </div>
+      <div class="e-labels"><span>Depleted</span><span>Neutral</span><span>Peak</span></div>
+    </div>
+    <div class="card"><div class="ca ca-m"></div>
+      <div class="card-hd"><div><span class="card-em">🎯</span><div class="card-title">Today's Outcomes</div><div class="card-sub">Not tasks — real impact</div></div><div class="chip ch-m">3 MAX</div></div>
+      <div id="out-list">
+        <div class="out-item"><div class="out-num">1</div><input class="out-inp" id="o1" placeholder="What would make today meaningful?" oninput="autoSave()"><div class="out-chk" id="oc1" onclick="toggleOut('oc1')"></div></div>
+        <div class="out-item"><div class="out-num">2</div><input class="out-inp" id="o2" placeholder="Second outcome..." oninput="autoSave()"><div class="out-chk" id="oc2" onclick="toggleOut('oc2')"></div></div>
+        <div class="out-item"><div class="out-num">3</div><input class="out-inp" id="o3" placeholder="Third outcome..." oninput="autoSave()"><div class="out-chk" id="oc3" onclick="toggleOut('oc3')"></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MIDDAY -->
+  <div class="flow-row">
+    <div class="flow-ic fi-mi">🌤️</div>
+    <div class="flow-title">Midday</div>
+    <div class="flow-badge">2 min</div>
+    <div class="flow-line"></div>
+  </div>
+  <div class="g2">
+    <div class="card"><div class="ca ca-p"></div>
+      <div class="card-hd"><div><span class="card-em">⚡</span><div class="card-title">Energy Check</div><div class="card-sub">Adjust your afternoon</div></div><div class="chip ch-p">MIDDAY</div></div>
+      <div class="e-row" id="mi-e">
+        <button class="e-btn" onclick="setE('mi',1,this)">😴 1</button>
+        <button class="e-btn" onclick="setE('mi',2,this)">😪 2</button>
+        <button class="e-btn" onclick="setE('mi',3,this)">😊 3</button>
+        <button class="e-btn" onclick="setE('mi',4,this)">😄 4</button>
+        <button class="e-btn" onclick="setE('mi',5,this)">🔥 5</button>
+      </div>
+      <div class="e-labels"><span>Depleted</span><span>Neutral</span><span>Peak</span></div>
+    </div>
+    <div class="card"><div class="ca ca-l"></div>
+      <div class="card-hd"><div><span class="card-em">🧠</span><div class="card-title">Mental Load</div><div class="card-sub">Anti-Burnout Core</div></div><div class="chip ch-l">SIGNATURE</div></div>
+      <div class="sl-track"><div class="sl-fill" id="sl-fill" style="width:10%"></div>
+        <input type="range" min="1" max="10" value="1" id="ml-sl" oninput="updateML(this.value)"></div>
+      <div class="sl-nums"><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>10</span></div>
+      <div class="ml-big"><div class="ml-num" id="ml-num" style="color:var(--md)">1</div><div class="ml-stat" id="ml-stat" style="color:var(--md)">🌿 Light & Clear</div></div>
+      <div style="margin-top:12px;">
+        <div style="font-size:11px;color:var(--mid);font-weight:600;margin-bottom:5px;">🗯️ Brain Dump — what's weighing on you?</div>
+        <textarea class="bdump bd-l" id="brain-dump" placeholder="Just let it out... 💜" oninput="autoSave()"></textarea>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" id="recharge-card" style="display:none;margin-top:12px;"><div class="ca ca-p"></div>
+    <div class="card-hd"><div><span class="card-em">🌸</span><div class="card-title">Recharge Menu</div><div class="card-sub">High load detected — pick a reset</div></div><div class="chip ch-p">SELF-CARE</div></div>
+    <div class="rc-grid">
+      <div class="rc-item" onclick="this.classList.toggle('used')">🍵 Cozy tea</div>
+      <div class="rc-item" onclick="this.classList.toggle('used')">🚶 5-min walk</div>
+      <div class="rc-item" onclick="this.classList.toggle('used')">🫁 Box breathing</div>
+      <div class="rc-item" onclick="this.classList.toggle('used')">📖 Read 10 pages</div>
+      <div class="rc-item" onclick="this.classList.toggle('used')">🎵 Calm playlist</div>
+      <div class="rc-item" onclick="this.classList.toggle('used')">💤 20-min rest</div>
+      <div class="rc-item" onclick="this.classList.toggle('used')">🛁 Freshen up</div>
+      <div class="rc-item" onclick="this.classList.toggle('used')">✍️ Free journal</div>
+    </div>
+  </div>
+
+  <!-- NIGHT -->
+  <div class="flow-row">
+    <div class="flow-ic fi-ni">🌙</div>
+    <div class="flow-title">Night</div>
+    <div class="flow-badge">5 min</div>
+    <div class="flow-line"></div>
+  </div>
+  <div class="g2">
+    <div class="card"><div class="ca ca-b"></div>
+      <div class="card-hd"><div><span class="card-em">🌿</span><div class="card-title">Ta-Da Log</div><div class="card-sub">Every win counts 🎉</div></div><div class="chip ch-b">WINS!</div></div>
+      <div style="font-size:12px;color:var(--mid);font-weight:600;margin-bottom:8px;">Big or small — it ALL counts!</div>
+      <div id="tada-list">
+        <div class="tada-item"><span>⭐</span><input class="tada-inp" placeholder="A win from today..." oninput="countWins()"></div>
+      </div>
+      <button class="add-btn" onclick="addTada()">+ Add another win</button>
+      <div style="margin-top:12px;padding:10px 14px;background:var(--b);border-radius:var(--rs);">
+        <div style="font-size:10px;font-weight:700;color:var(--bx);text-transform:uppercase;letter-spacing:1px;">Total Wins Today</div>
+        <div style="font-family:'Caveat',cursive;font-size:34px;color:var(--dark);" id="win-count">0 🏆</div>
+      </div>
+    </div>
+    <div class="card"><div class="ca ca-s"></div>
+      <div class="card-hd"><div><span class="card-em">🧩</span><div class="card-title">Decision Journal</div><div class="card-sub">CEO-Level Thinking</div></div><div class="chip ch-s">REFLECT</div></div>
+      <div class="dec-box"><div class="dec-lbl">📌 Key Decision Today</div><textarea class="dec-inp" id="d-what" placeholder="What did you decide?" oninput="autoSave()"></textarea></div>
+      <div class="dec-box"><div class="dec-lbl">🤔 My Reasoning</div><textarea class="dec-inp" id="d-why" placeholder="Why?" oninput="autoSave()"></textarea></div>
+      <div class="dec-box"><div class="dec-lbl">🔮 Expected Outcome</div><textarea class="dec-inp" id="d-out" placeholder="What happens next?" oninput="autoSave()"></textarea></div>
+      <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--sd);margin:10px 0 6px;">Decision Type</div>
+      <div class="tchips" id="dec-chips">
+        <div class="tchip" onclick="selChip(this,'dec-chips')">😊 Emotional</div>
+        <div class="tchip" onclick="selChip(this,'dec-chips')">🧠 Logical</div>
+        <div class="tchip" onclick="selChip(this,'dec-chips')">🎲 Instinct</div>
+        <div class="tchip" onclick="selChip(this,'dec-chips')">📊 Data-based</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:12px;"><div class="ca ca-p"></div>
+    <div class="card-hd"><div><span class="card-em">🌙</span><div class="card-title">Night Reflection</div><div class="card-sub">End of day energy + self-compassion</div></div><div class="chip ch-p">NIGHT</div></div>
+    <div class="g2">
+      <div>
+        <div style="font-size:12px;color:var(--mid);font-weight:600;margin-bottom:6px;">End of day energy?</div>
+        <div class="e-row" id="ni-e">
+          <button class="e-btn" onclick="setE('ni',1,this)">😴 1</button>
+          <button class="e-btn" onclick="setE('ni',2,this)">😪 2</button>
+          <button class="e-btn" onclick="setE('ni',3,this)">😊 3</button>
+          <button class="e-btn" onclick="setE('ni',4,this)">😄 4</button>
+          <button class="e-btn" onclick="setE('ni',5,this)">🔥 5</button>
+        </div>
+      </div>
+      <div>
+        <div style="font-size:12px;color:var(--mid);font-weight:600;margin-bottom:6px;">Did today actually matter?</div>
+        <div class="tchips" id="matter-chips">
+          <div class="tchip" onclick="selChip(this,'matter-chips')">💚 Yes!</div>
+          <div class="tchip" onclick="selChip(this,'matter-chips')">🤷 Mostly</div>
+          <div class="tchip" onclick="selChip(this,'matter-chips')">😔 Not really</div>
+        </div>
+      </div>
+    </div>
+    <div style="margin-top:12px;">
+      <div style="font-size:12px;color:var(--mid);font-weight:600;margin-bottom:6px;">💌 One kind thing to say to yourself tonight</div>
+      <textarea class="bdump bd-p" id="kind-note" placeholder="Be gentle with yourself... 🌸" oninput="autoSave()" style="min-height:50px;"></textarea>
+    </div>
+  </div>
+
+  <div class="save-bar">
+    <div class="save-msg">✨ Score: <strong id="save-score">—</strong> &nbsp;·&nbsp; Auto-saves as you type · Click to add to history</div>
+    <button class="btn-save" onclick="saveDay()">💾 Save to History + Analytics</button>
+  </div>
+</div>
+
+
+<div class="pg" id="pg-history">
+  <div class="ph">
+    <div><div class="ph-eyebrow">📖 Journal</div><div class="ph-title">History</div><div class="ph-sub">All your logged days</div></div>
+    <div class="hdr-actions">
+      <button class="exp-btn" onclick="exportData()">⬇ Export</button>
+      <button class="exp-btn" style="border-color:var(--rd);color:var(--rd);" onclick="clearHistory()">🗑 Clear All</button>
+    </div>
+  </div>
+  <div id="history-list"><div class="empty-hist"><div class="em-ic">📖</div><p>No logs yet — fill in Today's Log and save to build your history.</p></div></div>
+</div>
+
+
+<div class="pg" id="pg-overview">
+  <div class="ph">
+    <div><div class="ph-eyebrow">📊 Analytics</div><div class="ph-title">Overview</div><div class="ph-sub" id="ov-sub">Last 14 days</div></div>
+    <div class="hdr-actions">
+      <div class="ptabs">
+        <button class="pt" onclick="setPeriod(7,this)">7 Days</button>
+        <button class="pt on" onclick="setPeriod(14,this)">14 Days</button>
+        <button class="pt" onclick="setPeriod(30,this)">30 Days</button>
+      </div>
+    </div>
+  </div>
+  <div class="stat-row">
+    <div class="stat sp"><span class="stat-ic">✨</span><div class="stat-v" id="sv-cozy" style="color:var(--ld)">7.2</div><div class="stat-l">Avg Cozy Score</div><div class="stat-d du">↑ +0.8</div></div>
+    <div class="stat sl"><span class="stat-ic">⚡</span><div class="stat-v" id="sv-e" style="color:var(--pd)">3.6</div><div class="stat-l">Avg Energy /5</div><div class="stat-d du">↑ +0.3</div></div>
+    <div class="stat sl"><span class="stat-ic">🧠</span><div class="stat-v" id="sv-ml" style="color:var(--ld)">5.4</div><div class="stat-l">Avg Mental Load</div><div class="stat-d dd">↑ Higher load</div></div>
+    <div class="stat sm"><span class="stat-ic">🎯</span><div class="stat-v" id="sv-oc" style="color:var(--md)">68%</div><div class="stat-l">Hit Rate</div><div class="stat-d du">↑ +12%</div></div>
+    <div class="stat sb2"><span class="stat-ic">🌿</span><div class="stat-v" id="sv-td" style="color:var(--bd)">42</div><div class="stat-l">Ta-Da Wins</div><div class="stat-d du">↑ More wins!</div></div>
+    <div class="stat sr"><span class="stat-ic">🔥</span><div class="stat-v" id="sv-str" style="color:var(--rd)">9</div><div class="stat-l">Day Streak</div><div class="stat-d du">Personal best!</div></div>
+  </div>
+  <div class="g1"><div class="cc">
+    <div class="cc-hd"><div><span class="cc-em">✨</span><div class="cc-title">Cozy Score Trend</div><div class="cc-sub">Your combined daily wellness</div></div><span class="chip ch-l">OVERVIEW</span></div>
+    <canvas id="ch-cozy" height="90"></canvas>
+    <div class="pills">
+      <div class="pill pm2">🏆 Best: <strong id="pill-best">—</strong></div>
+      <div class="pill pp2">📉 Dip: <strong id="pill-dip">—</strong></div>
+      <div class="pill pl2">📈 <strong id="pill-trend">Building data...</strong></div>
+    </div>
+  </div></div>
+  <div class="g2" style="margin-top:16px;">
+    <div class="cc"><div class="cc-hd"><div><span class="cc-em">⚡</span><div class="cc-title">Energy Rhythm</div><div class="cc-sub">Morning · Midday · Night</div></div><span class="chip ch-p">ENERGY</span></div><canvas id="ch-ov-e" height="130"></canvas></div>
+    <div class="cc"><div class="cc-hd"><div><span class="cc-em">🧠</span><div class="cc-title">Mental Load</div><div class="cc-sub">Burnout risk over time</div></div><span class="chip ch-l">MENTAL</span></div><canvas id="ch-ov-ml" height="130"></canvas></div>
+  </div>
+  <div class="g1" style="margin-top:16px;"><div class="cc">
+    <div class="cc-hd"><div><span class="cc-em">🌟</span><div class="cc-title">30-Day Wellness Heatmap</div><div class="cc-sub">Cozy score calendar — deeper = higher</div></div><span class="chip ch-m">HEATMAP</span></div>
+    <div class="hm-lbl"><div class="hml">Sun</div><div class="hml">Mon</div><div class="hml">Tue</div><div class="hml">Wed</div><div class="hml">Thu</div><div class="hml">Fri</div><div class="hml">Sat</div></div>
+    <div class="hm-grid" id="heatmap"></div>
+    <div class="pills" style="margin-top:10px;">
+      <div class="pill pm2" style="font-size:10px;">🟩 8-10 Thriving</div>
+      <div class="pill ps2" style="font-size:10px;">🟦 5-7 Steady</div>
+      <div class="pill pp2" style="font-size:10px;">🟧 3-4 Low</div>
+    </div>
+  </div></div>
+  <div class="g2" style="margin-top:16px;">
+    <div class="cc"><div class="cc-hd"><div><span class="cc-em">📅</span><div class="cc-title">Best Days of Week</div><div class="cc-sub">Avg Cozy Score by weekday</div></div><span class="chip ch-m">PATTERN</span></div>
+      <div class="dbars" id="dayBars"></div>
+      <div style="display:flex;justify-content:space-between;padding:0 2px;"><span class="dbl">Sun</span><span class="dbl">Mon</span><span class="dbl">Tue</span><span class="dbl">Wed</span><span class="dbl">Thu</span><span class="dbl">Fri</span><span class="dbl">Sat</span></div>
+      <div class="pills" style="margin-top:10px;"><div class="pill pm2">🏆 Best: <strong id="best-day">—</strong></div></div>
+    </div>
+    <div class="cc"><div class="cc-hd"><div><span class="cc-em">🧩</span><div class="cc-title">Decision Types</div><div class="cc-sub">Emotional vs Logical over time</div></div><span class="chip ch-s">DECISIONS</span></div><canvas id="ch-dec-donut" height="155"></canvas></div>
+  </div>
+</div>
+
+
+<div class="pg" id="pg-energy">
+  <div class="ph"><div><div class="ph-eyebrow">⚡ Analytics</div><div class="ph-title">Energy Trends</div><div class="ph-sub">Daily rhythm intelligence</div></div></div>
+  <div class="g1"><div class="cc"><div class="cc-hd"><div><span class="cc-em">⚡</span><div class="cc-title">Full Energy Rhythm</div><div class="cc-sub">Morning, Midday and Night across all logged days</div></div><span class="chip ch-p">ENERGY MAP</span></div><canvas id="ch-e-full" height="100"></canvas></div></div>
+  <div class="g2" style="margin-top:16px;">
+    <div class="cc"><div class="cc-hd"><div><span class="cc-em">🔥</span><div class="cc-title">Prime Time Map</div><div class="cc-sub">Your natural hourly energy curve</div></div><span class="chip ch-p">PRIME TIME</span></div><canvas id="ch-prime" height="160"></canvas></div>
+    <div class="cc"><div class="cc-hd"><div><span class="cc-em">📊</span><div class="cc-title">Energy Distribution</div><div class="cc-sub">How often you hit each level</div></div><span class="chip ch-p">DIST</span></div><canvas id="ch-e-dist" height="160"></canvas></div>
+  </div>
+</div>
+
+
+<div class="pg" id="pg-mental">
+  <div class="ph"><div><div class="ph-eyebrow">🧠 Analytics</div><div class="ph-title">Mental Load</div><div class="ph-sub">Anti-burnout core — your signature differentiator</div></div></div>
+  <div class="g3">
+    <div class="cc"><div class="cc-hd"><div><span class="cc-em">🧠</span><div class="cc-title">Mental Load Trend</div><div class="cc-sub">Danger zone at 7+</div></div><span class="chip ch-l">ANTI-BURNOUT</span></div><canvas id="ch-ml-full" height="100"></canvas>
+      <div class="pills"><div class="pill pp2">🆘 Danger days: <strong id="danger-days">—</strong></div><div class="pill pm2">🌿 Clear days: <strong id="clear-days">—</strong></div></div>
+    </div>
+    <div class="cc"><div class="cc-hd"><div><span class="cc-em">🌡️</span><div class="cc-title">Burnout Risk</div><div class="cc-sub">Current gauge</div></div><span class="chip ch-l">RISK</span></div>
+      <div style="display:flex;align-items:center;justify-content:center;flex-direction:column;padding:10px 0;">
+        <svg width="180" height="110" viewBox="0 0 180 110" overflow="visible">
+          <defs><linearGradient id="gg" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stop-color="#4DB89A"/><stop offset="40%" stop-color="#FFE070"/>
+            <stop offset="70%" stop-color="#FFBFA0"/><stop offset="100%" stop-color="#E8916A"/>
+          </linearGradient></defs>
+          <path d="M 20 95 A 70 70 0 0 1 160 95" fill="none" stroke="#EEE" stroke-width="16" stroke-linecap="round"/>
+          <path d="M 20 95 A 70 70 0 0 1 160 95" fill="none" stroke="url(#gg)" stroke-width="16" stroke-linecap="round" stroke-dasharray="220" id="gauge-fill" stroke-dashoffset="88"/>
+          <line x1="90" y1="95" x2="90" y2="38" stroke="#2E2040" stroke-width="2.5" stroke-linecap="round" id="gauge-needle" transform="rotate(18 90 95)"/>
+          <circle cx="90" cy="95" r="6" fill="#2E2040"/>
+          <text x="18" y="108" font-size="9" font-weight="700" fill="#2E8A72" font-family="DM Sans,sans-serif">SAFE</text>
+          <text x="148" y="108" font-size="9" font-weight="700" fill="#C4673E" font-family="DM Sans,sans-serif">HIGH</text>
+          <text x="90" y="80" font-size="22" font-weight="700" fill="#2E2040" font-family="Caveat,cursive" text-anchor="middle" id="gauge-pct">38%</text>
+          <text x="90" y="94" text-anchor="middle" font-size="9" fill="#6A5878" font-family="DM Sans,sans-serif">Burnout Risk</text>
+        </svg>
+        <div class="pill pm2" style="font-size:11px;margin-top:8px;" id="gauge-label">🌿 Low Risk</div>
+      </div>
+    </div>
+  </div>
+  <div class="g2" style="margin-top:16px;">
+    <div class="cc"><div class="cc-hd"><div><span class="cc-em">🔗</span><div class="cc-title">Mental Load vs Energy</div><div class="cc-sub">High loads crush energy</div></div><span class="chip ch-l">CORRELATION</span></div><canvas id="ch-lv-e" height="150"></canvas>
+      <div class="pills" style="margin-top:8px;"><div class="corr-b pp2">📉 Negative correlation: High load = Low energy</div></div>
+    </div>
+    <div class="cc"><div class="cc-hd"><div><span class="cc-em">🌸</span><div class="cc-title">Recharge Activities</div><div class="cc-sub">What actually helps you reset</div></div><span class="chip ch-p">SELF-CARE</span></div><canvas id="ch-rc" height="150"></canvas></div>
+  </div>
+</div>
+
+
+<div class="pg" id="pg-outcomes">
+  <div class="ph"><div><div class="ph-eyebrow">🎯 Analytics</div><div class="ph-title">Outcomes & Wins</div><div class="ph-sub">Did your days actually matter?</div></div></div>
+  <div class="g1"><div class="cc"><div class="cc-hd"><div><span class="cc-em">🎯</span><div class="cc-title">Outcomes Completed vs Set</div><div class="cc-sub">Are your days actually meaningful?</div></div><span class="chip ch-m">OUTCOMES</span></div><canvas id="ch-oc" height="90"></canvas></div></div>
+  <div class="g2" style="margin-top:16px;">
+    <div class="cc"><div class="cc-hd"><div><span class="cc-em">🌿</span><div class="cc-title">Ta-Da Wins per Day</div><div class="cc-sub">Your momentum tracker</div></div><span class="chip ch-b">TA-DA</span></div><canvas id="ch-tada" height="150"></canvas></div>
+    <div class="cc"><div class="cc-hd"><div><span class="cc-em">📈</span><div class="cc-title">Weekly Hit Rate</div><div class="cc-sub">% of outcomes achieved each week</div></div><span class="chip ch-m">WEEKLY</span></div><canvas id="ch-hit" height="150"></canvas></div>
+  </div>
+</div>
+
+
+<div class="pg" id="pg-decisions">
+  <div class="ph"><div><div class="ph-eyebrow">🧩 Analytics</div><div class="ph-title">Decision Analysis</div><div class="ph-sub">CEO-level thinking — patterns over time</div></div></div>
+  <div class="g2">
+    <div class="cc"><div class="cc-hd"><div><span class="cc-em">🧩</span><div class="cc-title">Decision Types</div><div class="cc-sub">Emotional vs Logical breakdown</div></div><span class="chip ch-s">PATTERN</span></div><canvas id="ch-dec-pie" height="150"></canvas></div>
+    <div class="cc"><div class="cc-hd"><div><span class="cc-em">📊</span><div class="cc-title">Decision Quality</div><div class="cc-sub">Outcome satisfaction by type (1-5)</div></div><span class="chip ch-s">QUALITY</span></div><canvas id="ch-dec-q" height="150"></canvas>
+      <div class="pills" style="margin-top:8px;"><div class="pill ps2">📈 Logical decisions score highest</div><div class="pill pp2">⚠️ Emotional calls rate lowest</div></div>
+    </div>
+  </div>
+  <div class="cc" style="margin-top:16px;"><div class="cc-hd"><div><span class="cc-em">🏆</span><div class="cc-title">Historical Decision Outcomes</div><div class="cc-sub">Looking back — did your predictions come true?</div></div><span class="chip ch-dk">CEO THINKING</span></div><canvas id="ch-dec-out" height="70"></canvas>
+    <div class="pills"><div class="pill pm2">✅ Good outcomes: <strong>74%</strong></div><div class="pill ps2">🎲 Instinct accuracy: <strong>68%</strong></div><div class="pill pp2">😊 Emotional accuracy: <strong>52%</strong></div></div>
+  </div>
+</div>
+
+
+<div class="pg" id="pg-matrix">
+  <div class="ph"><div><div class="ph-eyebrow">📐 Framework</div><div class="ph-title">Decision Matrix</div><div class="ph-sub">Eisenhower framework — reimagined for energy-based living</div></div></div>
+  <div class="cc" style="margin-bottom:16px;">
+    <div style="font-size:13px;color:var(--mid);line-height:1.7;margin-bottom:14px;max-width:560px;">Place decisions into the right quadrant based on <strong>urgency</strong> (time-sensitive) and <strong>importance</strong> (impact on real goals).</div>
+    <div style="font-size:10px;font-weight:700;color:var(--mid);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;">↑ Important</div>
+    <div class="mx-grid">
+      <div class="mq mq-do"><div class="mq-sub">⚡ Urgent + Important</div><div class="mq-title">DO NOW</div><div class="mq-desc">High energy. Do during prime time. Max 2 per day.</div>
+        <div class="mq-items" id="q-do"><div class="mq-item"><div class="mq-dot" style="background:var(--mx)"></div>Finish project proposal<span class="mq-rm" onclick="this.parentNode.remove()">✕</span></div></div></div>
+      <div class="mq mq-sc"><div class="mq-sub">🗓️ Important + Not Urgent</div><div class="mq-title">SCHEDULE IT</div><div class="mq-desc">Your future self thanks you. Block time weekly.</div>
+        <div class="mq-items" id="q-sc"><div class="mq-item"><div class="mq-dot" style="background:var(--sx)"></div>Plan next quarter goals<span class="mq-rm" onclick="this.parentNode.remove()">✕</span></div></div></div>
+      <div class="mq mq-dl"><div class="mq-sub">🤝 Urgent + Not Important</div><div class="mq-title">DELEGATE</div><div class="mq-desc">Feels urgent but misses your goals. Pass it on.</div>
+        <div class="mq-items" id="q-dl"><div class="mq-item"><div class="mq-dot" style="background:var(--bx)"></div>Routine admin tasks<span class="mq-rm" onclick="this.parentNode.remove()">✕</span></div></div></div>
+      <div class="mq mq-el"><div class="mq-sub">🗑️ Not Urgent + Not Important</div><div class="mq-title">ELIMINATE</div><div class="mq-desc">Energy leaks. Drain your Cozy Score silently.</div>
+        <div class="mq-items" id="q-el"><div class="mq-item"><div class="mq-dot" style="background:var(--px)"></div>Scroll social 40min<span class="mq-rm" onclick="this.parentNode.remove()">✕</span></div></div></div>
+    </div>
+    <div class="mx-ax"><span>↑ Urgent</span><span>Not Urgent ↓</span></div>
+    <div style="margin-top:14px;padding:14px;background:var(--l);border-radius:14px;">
+      <div style="font-family:'Caveat',cursive;font-size:17px;font-weight:700;margin-bottom:8px;">✏️ Add a Decision or Task</div>
+      <div class="mx-input-row">
+        <input class="mx-inp" id="mx-inp" placeholder="e.g. Prepare presentation...">
+        <select class="mx-sel" id="mx-sel"><option value="q-do">⚡ DO NOW</option><option value="q-sc">🗓️ SCHEDULE</option><option value="q-dl">🤝 DELEGATE</option><option value="q-el">🗑️ ELIMINATE</option></select>
+        <button class="btn-add" onclick="addMx()">+ Add</button>
+      </div>
+    </div>
+  </div>
+  <div style="font-family:'Caveat',cursive;font-size:22px;font-weight:700;margin-bottom:12px;">💡 Decision Principles</div>
+  <div class="g2">
+    <div style="padding:16px 18px;background:var(--l);border-radius:14px;"><div style="font-size:13px;font-weight:700;color:var(--lx);margin-bottom:5px;">🧠 The 10/10/10 Rule</div><div style="font-size:12px;color:var(--mid);line-height:1.65;">How will I feel in <strong>10 min? 10 months? 10 years?</strong> Emotional decisions usually only win the 10-minute check.</div></div>
+    <div style="padding:16px 18px;background:var(--m);border-radius:14px;"><div style="font-size:13px;font-weight:700;color:var(--mx);margin-bottom:5px;">💌 Dear Future Self Test</div><div style="font-size:12px;color:var(--mid);line-height:1.65;">If you'd be embarrassed to explain your reasoning in 6 months — <strong>pause and reconsider.</strong></div></div>
+    <div style="padding:16px 18px;background:var(--b);border-radius:14px;"><div style="font-size:13px;font-weight:700;color:var(--bx);margin-bottom:5px;">⚡ The Energy-Decision Rule</div><div style="font-size:12px;color:var(--mid);line-height:1.65;">Decisions when energy &lt;2 are <strong>40% more likely to be emotional.</strong> Never make big calls on low-energy days.</div></div>
+    <div style="padding:16px 18px;background:var(--s);border-radius:14px;"><div style="font-size:13px;font-weight:700;color:var(--sx);margin-bottom:5px;">🌙 Sleep-On-It Protocol</div><div style="font-size:12px;color:var(--mid);line-height:1.65;">For importance ≥7: <strong>sleep on it one night.</strong> Night mental load strongly predicts morning clarity.</div></div>
+  </div>
+</div>
+
+
+<div class="pg" id="pg-insights">
+  <div class="ph"><div><div class="ph-eyebrow">💡 Analytics</div><div class="ph-title">Personalized Insights</div><div class="ph-sub" id="insights-sub">Generated from your logged data</div></div></div>
+  <div id="insights-list">
+    <div class="ic ic-m"><div class="ic-hd"><span class="ic-em">📊</span><div class="ic-title">Log more days to unlock insights</div></div><div class="ic-body">Your personalized insights appear here as you build up your history. Log at least 7 days to see meaningful patterns emerge.</div></div>
+  </div>
+  <div class="cc" style="margin-top:20px;">
+    <div class="cc-hd"><div><span class="cc-em">🕸️</span><div class="cc-title">Wellness Profile Radar</div><div class="cc-sub">All 5 dimensions vs ideal</div></div><span class="chip ch-l">PROFILE</span></div>
+    <div class="radar-wrap"><canvas id="ch-radar" height="280"></canvas></div>
+    <div class="pills" style="margin-top:8px;"><div class="pill pm2">💚 Strongest: <strong id="radar-best">—</strong></div><div class="pill pp2">🔴 Grow: <strong id="radar-low">—</strong></div></div>
+  </div>
+</div>
+
+
+<div class="pg" id="pg-burnout">
+  <div class="ph"><div><div class="ph-eyebrow">🔥 Wellness</div><div class="ph-title">Burnout Assessment</div><div class="ph-sub">20 questions · 5 dimensions · honest answers only 🌸</div></div></div>
+
+  <div class="bq-intro" id="bq-intro">
+    <h2>🔥 Burnout Check-In</h2>
+    <p>This 20-question assessment measures five dimensions of your wellbeing — Physical, Emotional, Mental, Motivation, and Recovery. Rate each statement honestly. It takes about 4 minutes and the results are saved privately to your browser.</p>
+    <button class="bq-start" onclick="startBQ()">Begin Assessment →</button>
+    <div id="bq-last-result" style="margin-top:16px;font-size:12px;color:rgba(255,255,255,.4);"></div>
+  </div>
+
+  <div class="bq-progress" id="bq-prog">
+    <div class="bqp-row">
+      <span style="font-size:12px;font-weight:700;color:var(--mid);">Progress</span>
+      <div class="bqp-bar"><div class="bqp-fill" id="bqp-fill" style="width:0%"></div></div>
+      <span style="font-size:12px;font-weight:700;color:var(--ld);" id="bqp-count">0 / 20</span>
+    </div>
+  </div>
+
+  <div class="bq-form" id="bq-form">
+    <!-- Physical -->
+    <div class="bq-section">
+      <div class="bqs-hd" style="background:var(--p);">
+        <span class="bqs-em">💪</span>
+        <div><div class="bqs-title">Physical Vitality</div><div class="bqs-sub">How your body is holding up</div></div>
+      </div>
+      <div class="bq-item"><div class="bqi-num">Q1 of 20</div><div class="bqi-q">After sleeping, I feel genuinely rested and ready for the day.</div><div class="likert" data-q="1">
+        <button class="lb" data-v="1" onclick="setQ(1,1,this)"><span class="lem">😴</span><span class="llb">Almost Never</span></button>
+        <button class="lb" data-v="2" onclick="setQ(1,2,this)"><span class="lem">😪</span><span class="llb">Rarely</span></button>
+        <button class="lb" data-v="3" onclick="setQ(1,3,this)"><span class="lem">😐</span><span class="llb">Sometimes</span></button>
+        <button class="lb" data-v="4" onclick="setQ(1,4,this)"><span class="lem">😊</span><span class="llb">Often</span></button>
+        <button class="lb" data-v="5" onclick="setQ(1,5,this)"><span class="lem">✨</span><span class="llb">Almost Always</span></button>
+      </div></div>
+      <div class="bq-item"><div class="bqi-num">Q2 of 20</div><div class="bqi-q">My body feels comfortable day-to-day — free of tension, headaches, or unexplained pain.</div><div class="likert" data-q="2">
+        <button class="lb" data-v="1" onclick="setQ(2,1,this)"><span class="lem">😴</span><span class="llb">Almost Never</span></button><button class="lb" data-v="2" onclick="setQ(2,2,this)"><span class="lem">😪</span><span class="llb">Rarely</span></button><button class="lb" data-v="3" onclick="setQ(2,3,this)"><span class="lem">😐</span><span class="llb">Sometimes</span></button><button class="lb" data-v="4" onclick="setQ(2,4,this)"><span class="lem">😊</span><span class="llb">Often</span></button><button class="lb" data-v="5" onclick="setQ(2,5,this)"><span class="lem">✨</span><span class="llb">Almost Always</span></button>
+      </div></div>
+      <div class="bq-item"><div class="bqi-num">Q3 of 20</div><div class="bqi-q">My energy level at the START of each workday feels adequate and ready.</div><div class="likert" data-q="3">
+        <button class="lb" data-v="1" onclick="setQ(3,1,this)"><span class="lem">😴</span><span class="llb">Almost Never</span></button><button class="lb" data-v="2" onclick="setQ(3,2,this)"><span class="lem">😪</span><span class="llb">Rarely</span></button><button class="lb" data-v="3" onclick="setQ(3,3,this)"><span class="lem">😐</span><span class="llb">Sometimes</span></button><button class="lb" data-v="4" onclick="setQ(3,4,this)"><span class="lem">😊</span><span class="llb">Often</span></button><button class="lb" data-v="5" onclick="setQ(3,5,this)"><span class="lem">✨</span><span class="llb">Almost Always</span></button>
+      </div></div>
+      <div class="bq-item"><div class="bqi-num">Q4 of 20</div><div class="bqi-q">My body bounces back well after a stressful week — I recover relatively quickly.</div><div class="likert" data-q="4">
+        <button class="lb" data-v="1" onclick="setQ(4,1,this)"><span class="lem">😴</span><span class="llb">Almost Never</span></button><button class="lb" data-v="2" onclick="setQ(4,2,this)"><span class="lem">😪</span><span class="llb">Rarely</span></button><button class="lb" data-v="3" onclick="setQ(4,3,this)"><span class="lem">😐</span><span class="llb">Sometimes</span></button><button class="lb" data-v="4" onclick="setQ(4,4,this)"><span class="lem">😊</span><span class="llb">Often</span></button><button class="lb" data-v="5" onclick="setQ(4,5,this)"><span class="lem">✨</span><span class="llb">Almost Always</span></button>
+      </div></div>
+    </div>
+    <!-- Emotional -->
+    <div class="bq-section">
+      <div class="bqs-hd" style="background:var(--l);"><span class="bqs-em">💜</span><div><div class="bqs-title">Emotional Resilience</div><div class="bqs-sub">How you're holding up inside</div></div></div>
+      <div class="bq-item"><div class="bqi-num">Q5 of 20</div><div class="bqi-q">I feel emotionally present and engaged with my life — not numb or detached.</div><div class="likert" data-q="5"><button class="lb" data-v="1" onclick="setQ(5,1,this)"><span class="lem">😴</span><span class="llb">Almost Never</span></button><button class="lb" data-v="2" onclick="setQ(5,2,this)"><span class="lem">😪</span><span class="llb">Rarely</span></button><button class="lb" data-v="3" onclick="setQ(5,3,this)"><span class="lem">😐</span><span class="llb">Sometimes</span></button><button class="lb" data-v="4" onclick="setQ(5,4,this)"><span class="lem">😊</span><span class="llb">Often</span></button><button class="lb" data-v="5" onclick="setQ(5,5,this)"><span class="lem">✨</span><span class="llb">Almost Always</span></button></div></div>
+      <div class="bq-item"><div class="bqi-num">Q6 of 20</div><div class="bqi-q">I handle small problems without feeling disproportionately overwhelmed by them.</div><div class="likert" data-q="6"><button class="lb" data-v="1" onclick="setQ(6,1,this)"><span class="lem">😴</span><span class="llb">Almost Never</span></button><button class="lb" data-v="2" onclick="setQ(6,2,this)"><span class="lem">😪</span><span class="llb">Rarely</span></button><button class="lb" data-v="3" onclick="setQ(6,3,this)"><span class="lem">😐</span><span class="llb">Sometimes</span></button><button class="lb" data-v="4" onclick="setQ(6,4,this)"><span class="lem">😊</span><span class="llb">Often</span></button><button class="lb" data-v="5" onclick="setQ(6,5,this)"><span class="lem">✨</span><span class="llb">Almost Always</span></button></div></div>
+      <div class="bq-item"><div class="bqi-num">Q7 of 20</div><div class="bqi-q">I feel patient and even-tempered — not easily irritated or snapping at people.</div><div class="likert" data-q="7"><button class="lb" data-v="1" onclick="setQ(7,1,this)"><span class="lem">😴</span><span class="llb">Almost Never</span></button><button class="lb" data-v="2" onclick="setQ(7,2,this)"><span class="lem">😪</span><span class="llb">Rarely</span></button><button class="lb" data-v="3" onclick="setQ(7,3,this)"><span class="lem">😐</span><span class="llb">Sometimes</span></button><button class="lb" data-v="4" onclick="setQ(7,4,this)"><span class="lem">😊</span><span class="llb">Often</span></button><button class="lb" data-v="5" onclick="setQ(7,5,this)"><span class="lem">✨</span><span class="llb">Almost Always</span></button></div></div>
+      <div class="bq-item"><div class="bqi-num">Q8 of 20</div><div class="bqi-q">I still feel genuine joy or excitement about things I used to love.</div><div class="likert" data-q="8"><button class="lb" data-v="1" onclick="setQ(8,1,this)"><span class="lem">😴</span><span class="llb">Almost Never</span></button><button class="lb" data-v="2" onclick="setQ(8,2,this)"><span class="lem">😪</span><span class="llb">Rarely</span></button><button class="lb" data-v="3" onclick="setQ(8,3,this)"><span class="lem">😐</span><span class="llb">Sometimes</span></button><button class="lb" data-v="4" onclick="setQ(8,4,this)"><span class="lem">😊</span><span class="llb">Often</span></button><button class="lb" data-v="5" onclick="setQ(8,5,this)"><span class="lem">✨</span><span class="llb">Almost Always</span></button></div></div>
+    </div>
+    <!-- Mental -->
+    <div class="bq-section">
+      <div class="bqs-hd" style="background:var(--s);"><span class="bqs-em">🧠</span><div><div class="bqs-title">Mental Clarity</div><div class="bqs-sub">Your cognitive sharpness</div></div></div>
+      <div class="bq-item"><div class="bqi-num">Q9 of 20</div><div class="bqi-q">I can focus on a single task for 30+ minutes without my mind wandering or needing to context-switch.</div><div class="likert" data-q="9"><button class="lb" data-v="1" onclick="setQ(9,1,this)"><span class="lem">😴</span><span class="llb">Almost Never</span></button><button class="lb" data-v="2" onclick="setQ(9,2,this)"><span class="lem">😪</span><span class="llb">Rarely</span></button><button class="lb" data-v="3" onclick="setQ(9,3,this)"><span class="lem">😐</span><span class="llb">Sometimes</span></button><button class="lb" data-v="4" onclick="setQ(9,4,this)"><span class="lem">😊</span><span class="llb">Often</span></button><button class="lb" data-v="5" onclick="setQ(9,5,this)"><span class="lem">✨</span><span class="llb">Almost Always</span></button></div></div>
+      <div class="bq-item"><div class="bqi-num">Q10 of 20</div><div class="bqi-q">My memory and attention to detail feel sharp — I'm not making silly mistakes or forgetting things.</div><div class="likert" data-q="10"><button class="lb" data-v="1" onclick="setQ(10,1,this)"><span class="lem">😴</span><span class="llb">Almost Never</span></button><button class="lb" data-v="2" onclick="setQ(10,2,this)"><span class="lem">😪</span><span class="llb">Rarely</span></button><button class="lb" data-v="3" onclick="setQ(10,3,this)"><span class="lem">😐</span><span class="llb">Sometimes</span></button><button class="lb" data-v="4" onclick="setQ(10,4,this)"><span class="lem">😊</span><span class="llb">Often</span></button><button class="lb" data-v="5" onclick="setQ(10,5,this)"><span class="lem">✨</span><span class="llb">Almost Always</span></button></div></div>
+      <div class="bq-item"><div class="bqi-num">Q11 of 20</div><div class="bqi-q">I feel creative and capable when solving problems — ideas come relatively easily.</div><div class="likert" data-q="11"><button class="lb" data-v="1" onclick="setQ(11,1,this)"><span class="lem">😴</span><span class="llb">Almost Never</span></button><button class="lb" data-v="2" onclick="setQ(11,2,this)"><span class="lem">😪</span><span class="llb">Rarely</span></button><button class="lb" data-v="3" onclick="setQ(11,3,this)"><span class="lem">😐</span><span class="llb">Sometimes</span></button><button class="lb" data-v="4" onclick="setQ(11,4,this)"><span class="lem">😊</span><span class="llb">Often</span></button><button class="lb" data-v="5" onclick="setQ(11,5,this)"><span class="lem">✨</span><span class="llb">Almost Always</span></button></div></div>
+      <div class="bq-item"><div class="bqi-num">Q12 of 20</div><div class="bqi-q">I feel present and mindful during daily activities — not just going through the motions.</div><div class="likert" data-q="12"><button class="lb" data-v="1" onclick="setQ(12,1,this)"><span class="lem">😴</span><span class="llb">Almost Never</span></button><button class="lb" data-v="2" onclick="setQ(12,2,this)"><span class="lem">😪</span><span class="llb">Rarely</span></button><button class="lb" data-v="3" onclick="setQ(12,3,this)"><span class="lem">😐</span><span class="llb">Sometimes</span></button><button class="lb" data-v="4" onclick="setQ(12,4,this)"><span class="lem">😊</span><span class="llb">Often</span></button><button class="lb" data-v="5" onclick="setQ(12,5,this)"><span class="lem">✨</span><span class="llb">Almost Always</span></button></div></div>
+    </div>
+    <!-- Motivation -->
+    <div class="bq-section">
+      <div class="bqs-hd" style="background:var(--m);"><span class="bqs-em">🎯</span><div><div class="bqs-title">Motivation & Purpose</div><div class="bqs-sub">Your sense of meaning and drive</div></div></div>
+      <div class="bq-item"><div class="bqi-num">Q13 of 20</div><div class="bqi-q">My work and daily life feel meaningful and worthwhile right now.</div><div class="likert" data-q="13"><button class="lb" data-v="1" onclick="setQ(13,1,this)"><span class="lem">😴</span><span class="llb">Almost Never</span></button><button class="lb" data-v="2" onclick="setQ(13,2,this)"><span class="lem">😪</span><span class="llb">Rarely</span></button><button class="lb" data-v="3" onclick="setQ(13,3,this)"><span class="lem">😐</span><span class="llb">Sometimes</span></button><button class="lb" data-v="4" onclick="setQ(13,4,this)"><span class="lem">😊</span><span class="llb">Often</span></button><button class="lb" data-v="5" onclick="setQ(13,5,this)"><span class="lem">✨</span><span class="llb">Almost Always</span></button></div></div>
+      <div class="bq-item"><div class="bqi-num">Q14 of 20</div><div class="bqi-q">I feel genuinely motivated to start my day — not just forcing myself through it.</div><div class="likert" data-q="14"><button class="lb" data-v="1" onclick="setQ(14,1,this)"><span class="lem">😴</span><span class="llb">Almost Never</span></button><button class="lb" data-v="2" onclick="setQ(14,2,this)"><span class="lem">😪</span><span class="llb">Rarely</span></button><button class="lb" data-v="3" onclick="setQ(14,3,this)"><span class="lem">😐</span><span class="llb">Sometimes</span></button><button class="lb" data-v="4" onclick="setQ(14,4,this)"><span class="lem">😊</span><span class="llb">Often</span></button><button class="lb" data-v="5" onclick="setQ(14,5,this)"><span class="lem">✨</span><span class="llb">Almost Always</span></button></div></div>
+      <div class="bq-item"><div class="bqi-num">Q15 of 20</div><div class="bqi-q">I experience a real sense of accomplishment at the end of most days.</div><div class="likert" data-q="15"><button class="lb" data-v="1" onclick="setQ(15,1,this)"><span class="lem">😴</span><span class="llb">Almost Never</span></button><button class="lb" data-v="2" onclick="setQ(15,2,this)"><span class="lem">😪</span><span class="llb">Rarely</span></button><button class="lb" data-v="3" onclick="setQ(15,3,this)"><span class="lem">😐</span><span class="llb">Sometimes</span></button><button class="lb" data-v="4" onclick="setQ(15,4,this)"><span class="lem">😊</span><span class="llb">Often</span></button><button class="lb" data-v="5" onclick="setQ(15,5,this)"><span class="lem">✨</span><span class="llb">Almost Always</span></button></div></div>
+      <div class="bq-item"><div class="bqi-num">Q16 of 20</div><div class="bqi-q">I feel connected to my long-term goals and purpose — not cynical or detached from them.</div><div class="likert" data-q="16"><button class="lb" data-v="1" onclick="setQ(16,1,this)"><span class="lem">😴</span><span class="llb">Almost Never</span></button><button class="lb" data-v="2" onclick="setQ(16,2,this)"><span class="lem">😪</span><span class="llb">Rarely</span></button><button class="lb" data-v="3" onclick="setQ(16,3,this)"><span class="lem">😐</span><span class="llb">Sometimes</span></button><button class="lb" data-v="4" onclick="setQ(16,4,this)"><span class="lem">😊</span><span class="llb">Often</span></button><button class="lb" data-v="5" onclick="setQ(16,5,this)"><span class="lem">✨</span><span class="llb">Almost Always</span></button></div></div>
+    </div>
+    <!-- Recovery -->
+    <div class="bq-section">
+      <div class="bqs-hd" style="background:var(--b);"><span class="bqs-em">🌿</span><div><div class="bqs-title">Recovery & Connection</div><div class="bqs-sub">How well you restore and connect</div></div></div>
+      <div class="bq-item"><div class="bqi-num">Q17 of 20</div><div class="bqi-q">Rest days and weekends genuinely restore my energy — I come back feeling refreshed.</div><div class="likert" data-q="17"><button class="lb" data-v="1" onclick="setQ(17,1,this)"><span class="lem">😴</span><span class="llb">Almost Never</span></button><button class="lb" data-v="2" onclick="setQ(17,2,this)"><span class="lem">😪</span><span class="llb">Rarely</span></button><button class="lb" data-v="3" onclick="setQ(17,3,this)"><span class="lem">😐</span><span class="llb">Sometimes</span></button><button class="lb" data-v="4" onclick="setQ(17,4,this)"><span class="lem">😊</span><span class="llb">Often</span></button><button class="lb" data-v="5" onclick="setQ(17,5,this)"><span class="lem">✨</span><span class="llb">Almost Always</span></button></div></div>
+      <div class="bq-item"><div class="bqi-num">Q18 of 20</div><div class="bqi-q">I feel connected and supported by the people around me — not isolated.</div><div class="likert" data-q="18"><button class="lb" data-v="1" onclick="setQ(18,1,this)"><span class="lem">😴</span><span class="llb">Almost Never</span></button><button class="lb" data-v="2" onclick="setQ(18,2,this)"><span class="lem">😪</span><span class="llb">Rarely</span></button><button class="lb" data-v="3" onclick="setQ(18,3,this)"><span class="lem">😐</span><span class="llb">Sometimes</span></button><button class="lb" data-v="4" onclick="setQ(18,4,this)"><span class="lem">😊</span><span class="llb">Often</span></button><button class="lb" data-v="5" onclick="setQ(18,5,this)"><span class="lem">✨</span><span class="llb">Almost Always</span></button></div></div>
+      <div class="bq-item"><div class="bqi-num">Q19 of 20</div><div class="bqi-q">I regularly do things purely for fun or play — just for the joy of it.</div><div class="likert" data-q="19"><button class="lb" data-v="1" onclick="setQ(19,1,this)"><span class="lem">😴</span><span class="llb">Almost Never</span></button><button class="lb" data-v="2" onclick="setQ(19,2,this)"><span class="lem">😪</span><span class="llb">Rarely</span></button><button class="lb" data-v="3" onclick="setQ(19,3,this)"><span class="lem">😐</span><span class="llb">Sometimes</span></button><button class="lb" data-v="4" onclick="setQ(19,4,this)"><span class="lem">😊</span><span class="llb">Often</span></button><button class="lb" data-v="5" onclick="setQ(19,5,this)"><span class="lem">✨</span><span class="llb">Almost Always</span></button></div></div>
+      <div class="bq-item"><div class="bqi-num">Q20 of 20</div><div class="bqi-q">I can mentally "switch off" when I'm done for the day — I don't carry work into rest time.</div><div class="likert" data-q="20"><button class="lb" data-v="1" onclick="setQ(20,1,this)"><span class="lem">😴</span><span class="llb">Almost Never</span></button><button class="lb" data-v="2" onclick="setQ(20,2,this)"><span class="lem">😪</span><span class="llb">Rarely</span></button><button class="lb" data-v="3" onclick="setQ(20,3,this)"><span class="lem">😐</span><span class="llb">Sometimes</span></button><button class="lb" data-v="4" onclick="setQ(20,4,this)"><span class="lem">😊</span><span class="llb">Often</span></button><button class="lb" data-v="5" onclick="setQ(20,5,this)"><span class="lem">✨</span><span class="llb">Almost Always</span></button></div></div>
+    </div>
+    <div class="bq-submit" id="bq-submit">
+      <button class="bq-start" onclick="scoreBQ()">See My Results ✨</button>
+    </div>
+  </div>
+
+  <div class="bq-results" id="bq-results">
+    <div class="score-hero" id="sh-bg">
+      <div class="sh-num" id="sh-num">—</div>
+      <div class="sh-tot">out of 100</div>
+      <div class="sh-band" id="sh-band">—</div>
+      <div class="sh-desc" id="sh-desc">—</div>
+    </div>
+    <div style="font-family:'Caveat',cursive;font-size:22px;font-weight:700;margin-bottom:12px;">📊 Dimension Breakdown</div>
+    <div class="dim-grid" id="dim-grid"></div>
+    <div style="font-family:'Caveat',cursive;font-size:22px;font-weight:700;margin:20px 0 12px;">💡 Your Action Plan</div>
+    <div id="action-plan"></div>
+    <div style="font-family:'Caveat',cursive;font-size:22px;font-weight:700;margin:20px 0 12px;">🌿 Recommended Exercises</div>
+    <div class="ex-grid" id="ex-grid"></div>
+    <div style="font-family:'Caveat',cursive;font-size:22px;font-weight:700;margin:20px 0 12px;">📚 Books for Your Situation</div>
+    <div class="book-row" id="book-list"></div>
+    <div style="text-align:center;margin:24px 0;display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
+      <button class="bq-start" style="background:linear-gradient(135deg,var(--md),var(--sd));" onclick="saveBQ()">💾 Save Result</button>
+      <button class="bq-start" style="background:var(--dark);" onclick="retakeBQ()">🔄 Retake Assessment</button>
+    </div>
+    <div class="burnout-hist" id="bq-history"></div>
+  </div>
+</div>
+
+
+<div class="pg" id="pg-library">
+  <div class="ph"><div><div class="ph-eyebrow">📚 Wellness</div><div class="ph-title">Library</div><div class="ph-sub">Exercises, books and resources for your recovery journey</div></div></div>
+
+  <div class="lib-section">
+    <div class="lib-title">🌿 Recovery Exercises</div>
+    <div class="ex-grid">
+      <div class="ex-card"><div class="ex-hd"><span class="ex-em">💨</span><div class="ex-title">Box Breathing</div><span class="ex-time" style="background:var(--m);color:var(--mx);">4 min</span></div><div class="ex-body">Inhale 4 counts → hold 4 → exhale 4 → hold 4. Repeat 4 times. Activates the parasympathetic nervous system within 90 seconds. Use any time mental load hits 7+.</div><div style="margin-top:8px;font-size:10px;font-weight:700;color:var(--mx);">BEST FOR: Anxiety · Overwhelm · High Mental Load</div></div>
+      <div class="ex-card"><div class="ex-hd"><span class="ex-em">✋</span><div class="ex-title">5-4-3-2-1 Grounding</div><span class="ex-time" style="background:var(--s);color:var(--sx);">2 min</span></div><div class="ex-body">Name 5 things you see, 4 you can touch, 3 you hear, 2 you smell, 1 you taste. Grounds you in the present moment instantly. Works for anxiety spirals and decision paralysis.</div><div style="margin-top:8px;font-size:10px;font-weight:700;color:var(--sx);">BEST FOR: Panic · Dissociation · Spiralling thoughts</div></div>
+      <div class="ex-card"><div class="ex-hd"><span class="ex-em">☀️</span><div class="ex-title">Morning Sunlight</div><span class="ex-time" style="background:var(--b);color:var(--bx);">15 min</span></div><div class="ex-body">Step outside within 30 minutes of waking. No sunglasses. Even on cloudy days. Sets your circadian rhythm, boosts cortisol at the right time, and dramatically improves night sleep quality.</div><div style="margin-top:8px;font-size:10px;font-weight:700;color:var(--bx);">BEST FOR: Low energy · Poor sleep · Mood regulation</div></div>
+      <div class="ex-card"><div class="ex-hd"><span class="ex-em">🚶</span><div class="ex-title">Phone-Free Walk</div><span class="ex-time" style="background:var(--m);color:var(--mx);">20 min</span></div><div class="ex-body">Walk slowly with no destination and no phone. Let your mind wander freely. Default mode network activity during unfocused walking is proven to restore cognitive function and unlock creative thinking.</div><div style="margin-top:8px;font-size:10px;font-weight:700;color:var(--mx);">BEST FOR: Mental fatigue · Creative blocks · Stuck thinking</div></div>
+      <div class="ex-card"><div class="ex-hd"><span class="ex-em">💪</span><div class="ex-title">Progressive Muscle Relax</div><span class="ex-time" style="background:var(--l);color:var(--lx);">10 min</span></div><div class="ex-body">Tense each muscle group for 5 seconds, then release for 30. Start at your feet and work up to your head. Releases stored stress from the body. Best done lying down before sleep.</div><div style="margin-top:8px;font-size:10px;font-weight:700;color:var(--lx);">BEST FOR: Physical tension · Exhaustion · Pre-sleep</div></div>
+      <div class="ex-card"><div class="ex-hd"><span class="ex-em">✍️</span><div class="ex-title">3 Good Things</div><span class="ex-time" style="background:var(--m);color:var(--mx);">5 min</span></div><div class="ex-body">Write 3 specific things that went well today and WHY they went well. Research by Martin Seligman shows this increases wellbeing measurably within 2 weeks of daily practice.</div><div style="margin-top:8px;font-size:10px;font-weight:700;color:var(--mx);">BEST FOR: Low motivation · Cynicism · Negative spirals</div></div>
+      <div class="ex-card"><div class="ex-hd"><span class="ex-em">📵</span><div class="ex-title">Digital Sunset</div><span class="ex-time" style="background:var(--s);color:var(--sx);">Daily habit</span></div><div class="ex-body">No screens 60 minutes before sleep. Blue light suppresses melatonin production by up to 50%. Replace with reading, journaling, stretching, or a warm drink. Sleep quality visibly improves within a week.</div><div style="margin-top:8px;font-size:10px;font-weight:700;color:var(--sx);">BEST FOR: Poor sleep · Racing mind · Restlessness</div></div>
+      <div class="ex-card"><div class="ex-hd"><span class="ex-em">💧</span><div class="ex-title">Cold Water Face Splash</div><span class="ex-time" style="background:var(--b);color:var(--bx);">30 sec</span></div><div class="ex-body">Splash cold water on your face 5-10 times. Triggers the mammalian dive reflex — instantly lowers heart rate and activates calm focus. The fastest nervous system reset available anywhere, anytime.</div><div style="margin-top:8px;font-size:10px;font-weight:700;color:var(--bx);">BEST FOR: Panic · Afternoon energy dip · Quick reset</div></div>
+    </div>
+  </div>
+
+  <div class="lib-section">
+    <div class="lib-title">📚 Curated Reading List</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+      <div>
+        <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--pd);margin-bottom:10px;">💪 Physical Burnout & Rest</div>
+        <div class="book-row">
+          <div class="book-item"><div class="book-spine" style="background:var(--pd);"></div><div><div class="book-title">Rest</div><div class="book-author">Alex Soojung-Kim Pang</div><div class="book-why">Reframes rest as active and essential. The science of why doing less achieves more.</div></div></div>
+          <div class="book-item"><div class="book-spine" style="background:var(--pm);"></div><div><div class="book-title">Why We Sleep</div><div class="book-author">Matthew Walker</div><div class="book-why">The definitive guide to sleep science. Will permanently change how you think about rest.</div></div></div>
+          <div class="book-item"><div class="book-spine" style="background:var(--rd);"></div><div><div class="book-title">The Nap Ministry</div><div class="book-author">Tricia Hersey</div><div class="book-why">Rest as resistance and radical self-care. Permission to stop without guilt.</div></div></div>
+        </div>
+        <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--ld);margin:16px 0 10px;">💜 Emotional Burnout & Boundaries</div>
+        <div class="book-row">
+          <div class="book-item"><div class="book-spine" style="background:var(--ld);"></div><div><div class="book-title">Burnout</div><div class="book-author">Emily & Amelia Nagoski</div><div class="book-why">The science of what burnout actually is and the stress cycle you need to complete to heal.</div></div></div>
+          <div class="book-item"><div class="book-spine" style="background:var(--lm);"></div><div><div class="book-title">Set Boundaries Find Peace</div><div class="book-author">Nedra Tawwab</div><div class="book-why">Practical boundary-setting. Essential if people-pleasing is draining your energy.</div></div></div>
+          <div class="book-item"><div class="book-spine" style="background:var(--l);"></div><div><div class="book-title">Laziness Does Not Exist</div><div class="book-author">Devon Price</div><div class="book-why">Reframes "laziness" as unmet needs. Gives permission to rest without shame.</div></div></div>
+        </div>
+        <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--sd);margin:16px 0 10px;">🧠 Mental Burnout & Focus</div>
+        <div class="book-row">
+          <div class="book-item"><div class="book-spine" style="background:var(--sd);"></div><div><div class="book-title">Stolen Focus</div><div class="book-author">Johann Hari</div><div class="book-why">Why your attention is broken and who profits from it. Essential for the digital age.</div></div></div>
+          <div class="book-item"><div class="book-spine" style="background:var(--sm);"></div><div><div class="book-title">Four Thousand Weeks</div><div class="book-author">Oliver Burkeman</div><div class="book-why">A radical reframe of time and productivity. Helps you stop trying to do everything.</div></div></div>
+          <div class="book-item"><div class="book-spine" style="background:var(--s);"></div><div><div class="book-title">Deep Work</div><div class="book-author">Cal Newport</div><div class="book-why">The case for focused work and how to build it. Pairs beautifully with your energy map.</div></div></div>
+        </div>
+      </div>
+      <div>
+        <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--md);margin-bottom:10px;">🎯 Purpose & Motivation</div>
+        <div class="book-row">
+          <div class="book-item"><div class="book-spine" style="background:var(--md);"></div><div><div class="book-title">Essentialism</div><div class="book-author">Greg McKeown</div><div class="book-why">The disciplined pursuit of less. Helps you identify what actually matters to you.</div></div></div>
+          <div class="book-item"><div class="book-spine" style="background:var(--mm);"></div><div><div class="book-title">Dopamine Nation</div><div class="book-author">Anna Lembke</div><div class="book-why">Why rest feels hard and how to recalibrate your reward system. Deeply relevant.</div></div></div>
+          <div class="book-item"><div class="book-spine" style="background:var(--m);"></div><div><div class="book-title">How to Do Nothing</div><div class="book-author">Jenny Odell</div><div class="book-why">Radical permission to resist the attention economy and simply be. Quietly life-changing.</div></div></div>
+        </div>
+        <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--bd);margin:16px 0 10px;">⭐ My Personal Top Picks</div>
+        <div class="book-row">
+          <div class="book-item"><div class="book-spine" style="background:var(--bd);"></div><div><div class="book-title">The Body Keeps the Score</div><div class="book-author">Bessel van der Kolk</div><div class="book-why">How stress and trauma live in the body. Explains why physical symptoms appear in burnout.</div></div></div>
+          <div class="book-item"><div class="book-spine" style="background:var(--bm);"></div><div><div class="book-title">When the Body Says No</div><div class="book-author">Gabor Maté</div><div class="book-why">The link between suppressed emotion and physical illness. Gentle and profound.</div></div></div>
+          <div class="book-item"><div class="book-spine" style="background:var(--b);"></div><div><div class="book-title">Atomic Habits</div><div class="book-author">James Clear</div><div class="book-why">Build tiny recovery habits that compound. The best starting point for rebuilding gently.</div></div></div>
+        </div>
+        <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--rd);margin:16px 0 10px;">🌸 Also Recommended</div>
+        <div class="book-row">
+          <div class="book-item"><div class="book-spine" style="background:var(--rd);"></div><div><div class="book-title">The Artist's Way</div><div class="book-author">Julia Cameron</div><div class="book-why">Reconnecting with creativity and joy. The "morning pages" practice is genuinely restorative.</div></div></div>
+          <div class="book-item"><div class="book-spine" style="background:var(--r);"></div><div><div class="book-title">Tiny Habits</div><div class="book-author">BJ Fogg</div><div class="book-why">Build recovery habits so small they're impossible to skip. Perfect for rebuilding after burnout.</div></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div>
+<div class="toast" id="toast"></div>
+<script>
+
+// ═══════════════════════════════════════════════════════════
+// STORAGE
+// ═══════════════════════════════════════════════════════════
+const store = {
+  get(k){ try{return JSON.parse(localStorage.getItem('cozann_'+k)||'null');}catch{return null;} },
+  set(k,v){ try{localStorage.setItem('cozann_'+k,JSON.stringify(v));}catch{} },
+  getLogs(){ return this.get('logs')||[]; },
+  saveLogs(l){ this.set('logs',l); },
+  getBQ(){ return this.get('bq')||[]; },
+  saveBQ(r){ const a=this.getBQ(); a.unshift(r); this.set('bq',a.slice(0,20)); }
+};
+
+// ═══════════════════════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════════════════════
+const S = { mo:0, mi:0, ni:0, mental:1, outDone:[false,false,false], tadaN:1, decType:'', cozy:null };
+let chartsBuilt=false; let charts={};
+
+// ═══════════════════════════════════════════════════════════
+// SEED DATA (14 days for demo if no real data)
+// ═══════════════════════════════════════════════════════════
+function seedData(){
+  const base=new Date(2026,3,5);
+  const raw=[[3,2,2,4,2,3,3,'Emotional'],[2,2,2,7,1,3,2,'Logical'],[4,4,3,5,2,3,4,'Logical'],
+    [4,4,3,4,3,3,5,'Instinct'],[5,4,3,3,2,3,4,'Logical'],[3,2,2,8,1,2,2,'Emotional'],
+    [2,2,1,9,0,2,1,'Emotional'],[3,3,2,6,2,3,3,'Logical'],[4,3,3,5,2,3,4,'Data-based'],
+    [5,4,4,4,3,3,6,'Logical'],[4,4,3,6,2,3,4,'Logical'],[3,3,2,5,2,3,3,'Instinct'],
+    [4,3,3,4,3,3,5,'Logical'],[4,4,3,4,3,3,5,'Data-based']];
+  return raw.map((r,i)=>{
+    const d=new Date(base); d.setDate(d.getDate()+i);
+    const score=calcScore(r[0],r[1],r[2],r[3],r[4],r[6]);
+    return {date:d.toISOString().split('T')[0],label:fmtDate(d),mo:r[0],mi:r[1],ni:r[2],
+      mental:r[3],outcomes:['','',''],outDone:[r[4]>=1,r[4]>=2,r[4]>=3],
+      outSet:3,outDone_n:r[4],tada:Array(r[6]).fill('win'),tada_n:r[6],
+      decType:r[7],score};
+  });
+}
+function calcScore(mo,mi,ni,ml,oc,td){
+  const ev=[mo,mi,ni].filter(v=>v>0);
+  if(!ev.length&&!oc&&!td) return null;
+  const e=ev.length?(ev.reduce((a,b)=>a+b,0)/ev.length)/5*4:0;
+  const m=Math.max(0,10-ml)/10*3;
+  const o=(oc/3)*2;
+  const t=Math.min(td/5,1)*1;
+  return Math.round(Math.min(10,Math.max(1,e+m+o+t))*10)/10;
+}
+function fmtDate(d){ const months=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  return `${months[d.getMonth()]} ${d.getDate()}`; }
+
+function getHistory(){
+  const stored=store.getLogs();
+  return stored.length>=3 ? stored : [...seedData(),...stored];
+}
+
+// ═══════════════════════════════════════════════════════════
+// DATE + SIDEBAR
+// ═══════════════════════════════════════════════════════════
+(()=>{
+  const d=new Date(2026,3,19);
+  const days=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+  const months=['January','February','March','April','May','June','July','August','September','October','November','December'];
+  document.getElementById('sb-day').textContent=days[d.getDay()];
+  document.getElementById('sb-date').textContent=`${months[d.getMonth()]} ${d.getDate()}, ${d.getFullYear()}`;
+  document.getElementById('tracker-sub').textContent=`${days[d.getDay()]}, ${months[d.getMonth()]} ${d.getDate()}, ${d.getFullYear()}`;
+  const h=d.getHours();
+  const gr=h<12?'Good morning':h<17?'Good afternoon':'Good evening';
+})();
+
+// ═══════════════════════════════════════════════════════════
+// NAV
+// ═══════════════════════════════════════════════════════════
+function go(name, btn){
+  document.querySelectorAll('.pg').forEach(p=>p.classList.remove('on'));
+  document.querySelectorAll('.nav').forEach(b=>b.classList.remove('on'));
+  document.getElementById('pg-'+name).classList.add('on');
+  btn.classList.add('on');
+  if(name!=='tracker'&&name!=='history'&&name!=='burnout'&&name!=='library'){
+    try{if(!chartsBuilt){buildCharts();chartsBuilt=true;}}catch(e){console.warn('buildCharts:',e);}
+    try{refreshInsights();}catch(e){console.warn('refreshInsights:',e);}
+  }
+  if(name==='history') renderHistory();
+  if(name==='insights') refreshInsights();
+}
+
+// ═══════════════════════════════════════════════════════════
+// TRACKER LOGIC
+// ═══════════════════════════════════════════════════════════
+function setE(period,val,btn){
+  S[period]=val;
+  document.getElementById(period+'-e').querySelectorAll('.e-btn').forEach((b,i)=>{
+    b.classList.toggle('on',i+1===val);
+  });
+  autoSave();
+}
+function updateML(val){
+  S.mental=parseInt(val);
+  const pct=((val-1)/9*100);
+  document.getElementById('sl-fill').style.width=pct+'%';
+  document.getElementById('ml-num').textContent=val;
+  let col,stat;
+  if(val<=3){col='var(--md)';stat='🌿 Light & Clear';}
+  else if(val<=5){col='var(--sd)';stat='😊 Manageable';}
+  else if(val<=7){col='var(--bd)';stat='⚠️ Getting Heavy';}
+  else if(val<=9){col='var(--pd)';stat='🔥 Quite Full';}
+  else{col='#E05050';stat='🆘 Stop Pushing!';}
+  document.getElementById('ml-num').style.color=col;
+  document.getElementById('ml-stat').textContent=stat;
+  document.getElementById('ml-stat').style.color=col;
+  document.getElementById('recharge-card').style.display=val>=7?'block':'none';
+  autoSave();
+}
+function toggleOut(id){
+  const el=document.getElementById(id);
+  el.classList.toggle('ck');
+  el.textContent=el.classList.contains('ck')?'✓':'';
+  autoSave();
+}
+function selChip(el,gid){
+  document.getElementById(gid).querySelectorAll('.tchip').forEach(c=>c.classList.remove('on'));
+  el.classList.add('on');
+  if(gid==='dec-chips') S.decType=el.textContent.trim();
+  autoSave();
+}
+function addTada(){
+  S.tadaN++;
+  const list=document.getElementById('tada-list');
+  const item=document.createElement('div'); item.className='tada-item';
+  item.innerHTML=`<span>⭐</span><input class="tada-inp" placeholder="Another win..." oninput="countWins()">`;
+  list.appendChild(item);
+}
+function countWins(){
+  const inputs=document.querySelectorAll('#tada-list .tada-inp');
+  let n=0; inputs.forEach(i=>{if(i.value.trim())n++;});
+  document.getElementById('win-count').textContent=n+(n===1?' win 🏆':' wins 🏆');
+  autoSave();
+}
+function autoSave(){
+  countWins();
+  const ev=[S.mo,S.mi,S.ni].filter(v=>v>0);
+  const oc=document.querySelectorAll('.out-chk.ck').length;
+  const td=[...document.querySelectorAll('#tada-list .tada-inp')].filter(i=>i.value.trim()).length;
+  const s=calcScore(S.mo||0,S.mi||0,S.ni||0,S.mental,oc,td);
+  S.cozy=s;
+  const disp=s?s.toFixed(1):'—';
+  ['sb-score','hdr-score','save-score'].forEach(id=>{try{const el=document.getElementById(id);if(el)el.textContent=disp;}catch(e){}});
+  if(s){
+    document.getElementById('sb-bar').style.width=(s/10*100)+'%';
+    const msgs={9:'Absolutely thriving! 🌟',7:'A great day! ✨',5:'Solid & steady 🌸',3:'Rest is productive 🌿',0:"Tomorrow's fresh start 🌙"};
+    const key=Object.keys(msgs).reverse().find(k=>s>=Number(k));
+    document.getElementById('sb-msg').textContent=msgs[key]||'—';
+  }
+}
+function saveDay(){
+  if(!S.cozy){showToast('Please log at least energy and one win first 🌸');return;}
+  const d=new Date(2026,3,19);
+  const outs=[1,2,3].map(i=>document.getElementById('o'+i)?.value||'');
+  const outDone=[1,2,3].map(i=>document.getElementById('oc'+i)?.classList.contains('ck')||false);
+  const tadaEls=[...document.querySelectorAll('#tada-list .tada-inp')];
+  const entry={
+    date:d.toISOString().split('T')[0], label:fmtDate(d),
+    mo:S.mo||3, mi:S.mi||3, ni:S.ni||2, mental:S.mental,
+    outcomes:outs, outDone, outSet:3,
+    outDone_n:outDone.filter(Boolean).length,
+    tada:tadaEls.map(i=>i.value).filter(Boolean),
+    tada_n:tadaEls.filter(i=>i.value.trim()).length,
+    decType:S.decType||'Logical',
+    decWhat:document.getElementById('d-what')?.value||'',
+    decWhy:document.getElementById('d-why')?.value||'',
+    score:S.cozy
+  };
+  const logs=store.getLogs();
+  const idx=logs.findIndex(l=>l.date===entry.date);
+  if(idx>=0) logs[idx]=entry; else logs.push(entry);
+  store.saveLogs(logs);
+  chartsBuilt=false;
+  updateStreak();
+  showToast('✨ Day saved! Analytics updated.');
+}
+function updateStreak(){
+  const logs=store.getLogs();
+  const today=new Date();
+  let streak=0; let d=new Date(today);
+  for(let i=0;i<60;i++){
+    const k=d.toISOString().split('T')[0];
+    if(logs.find(l=>l.date===k)){streak++;d.setDate(d.getDate()-1);}
+    else break;
+  }
+  document.getElementById('sb-streak').textContent=streak+' day'+(streak!==1?'s':'');
+}
+
+// ═══════════════════════════════════════════════════════════
+// HISTORY
+// ═══════════════════════════════════════════════════════════
+function renderHistory(){
+  const logs=store.getLogs().slice().reverse();
+  const el=document.getElementById('history-list');
+  if(!logs.length){
+    el.innerHTML='<div class="empty-hist"><div class="em-ic">📖</div><p>No logs yet — fill in Today\'s Log and save to build your history.</p></div>';
+    return;
+  }
+  el.innerHTML=logs.map((l,i)=>{
+    const scoreCol=l.score>=8?'var(--md)':l.score>=5?'var(--bd)':'var(--pd)';
+    return `<div class="hist-log" onclick="toggleHL(${i})">
+      <div class="hl-row">
+        <div><div class="hl-date">${l.label||l.date}</div></div>
+        <div class="hl-score" style="color:${scoreCol}">${l.score||'—'}</div>
+      </div>
+      <div class="hl-chips">
+        <span class="hl-chip" style="background:var(--p);color:var(--px);">⚡ E: ${((l.mo+l.mi+l.ni)/3).toFixed(1)}/5</span>
+        <span class="hl-chip" style="background:var(--l);color:var(--lx);">🧠 ML: ${l.mental}/10</span>
+        <span class="hl-chip" style="background:var(--m);color:var(--mx);">🎯 ${l.outDone_n||0}/3 done</span>
+        <span class="hl-chip" style="background:var(--b);color:var(--bx);">🌿 ${l.tada_n||0} wins</span>
+        ${l.decType?`<span class="hl-chip" style="background:var(--s);color:var(--sx);">🧩 ${l.decType}</span>`:''}
+      </div>
+      <div class="hl-detail" id="hl-${i}">
+        ${l.decWhat?`<div style="margin-top:8px;font-size:12px;color:var(--mid);"><strong>Decision:</strong> ${l.decWhat}</div>`:''}
+        ${l.outcomes?.filter(Boolean).length?`<div style="margin-top:6px;font-size:12px;color:var(--mid);"><strong>Outcomes:</strong> ${l.outcomes.filter(Boolean).join(' · ')}</div>`:''}
+        ${l.tada?.length?`<div style="margin-top:6px;font-size:12px;color:var(--mid);"><strong>Wins:</strong> ${l.tada.filter(Boolean).join(', ')}</div>`:''}
+      </div>
+    </div>`;
+  }).join('');
+}
+function toggleHL(i){ const el=document.getElementById('hl-'+i); el.classList.toggle('open'); }
+function clearHistory(){ if(confirm('Clear all saved logs? This cannot be undone.')){store.set('logs',[]); renderHistory(); showToast('History cleared.');} }
+
+// ═══════════════════════════════════════════════════════════
+// EXPORT
+// ═══════════════════════════════════════════════════════════
+function exportData(){
+  const data={logs:store.getLogs(), burnout:store.getBQ(), exported:new Date().toISOString()};
+  const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
+  const a=document.createElement('a'); a.href=URL.createObjectURL(blob);
+  a.download='cozy-ann-data.json'; a.click();
+}
+
+// ═══════════════════════════════════════════════════════════
+// TOAST
+// ═══════════════════════════════════════════════════════════
+function showToast(msg){
+  const t=document.getElementById('toast'); t.textContent=msg;
+  t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),3000);
+}
+
+// ═══════════════════════════════════════════════════════════
+// CHARTS
+// ═══════════════════════════════════════════════════════════
+Chart.defaults.font.family="'DM Sans',sans-serif";
+Chart.defaults.color='#6A5878';
+const rgba=(r,g,b,a=1)=>`rgba(${r},${g},${b},${a})`;
+const PEACH=(a=1)=>rgba(232,145,106,a); const LAV=(a=1)=>rgba(155,114,208,a);
+const MINT=(a=1)=>rgba(77,184,154,a);   const SKY=(a=1)=>rgba(74,158,212,a);
+const BUTT=(a=1)=>rgba(212,168,0,a);
+const lGrad=(ctx,c)=>{const g=ctx.createLinearGradient(0,0,0,200);g.addColorStop(0,c(.28));g.addColorStop(1,c(.02));return g;};
+const BASE_OPT={responsive:true,interaction:{mode:'index',intersect:false},
+  plugins:{legend:{labels:{boxWidth:10,padding:14}},
+    tooltip:{backgroundColor:'white',titleColor:'#2E2040',bodyColor:'#6A5878',borderColor:'#EAD9FF',borderWidth:1.5,padding:12}},
+  scales:{x:{grid:{display:false},ticks:{maxTicksLimit:8}},y:{grid:{color:'rgba(200,180,220,.12)'}}}};
+function destroyCharts(){Object.values(charts).forEach(c=>c&&c.destroy());charts={};}
+function buildCharts(){
+  destroyCharts();
+  const H=getHistory();
+  const labels=H.map(d=>d.label||d.date);
+  // Cozy score
+  const cEl=document.getElementById('ch-cozy');
+  if(cEl){const ctx=cEl.getContext('2d');
+    charts.cozy=new Chart(ctx,{type:'line',data:{labels,datasets:[
+      {label:'Cozy Score',data:H.map(d=>d.score),borderColor:LAV(),backgroundColor:c=>lGrad(c.chart.ctx,LAV),
+        borderWidth:2.5,pointRadius:5,pointBackgroundColor:'white',pointBorderColor:LAV(),pointBorderWidth:2.5,tension:.4,fill:true},
+      {label:'Thriving (8)',data:Array(H.length).fill(8),borderColor:MINT(.4),borderWidth:1.5,borderDash:[5,3],pointRadius:0,fill:false}
+    ]},options:{...BASE_OPT,scales:{...BASE_OPT.scales,y:{...BASE_OPT.scales.y,min:0,max:10,ticks:{stepSize:2}}}}});
+    const scores=H.map(d=>d.score);
+    const maxI=scores.indexOf(Math.max(...scores)), minI=scores.indexOf(Math.min(...scores));
+    const be=document.getElementById('pill-best'),de=document.getElementById('pill-dip'),te=document.getElementById('pill-trend');
+    if(be) be.textContent=`${H[maxI].label} (${H[maxI].score})`;
+    if(de) de.textContent=`${H[minI].label} (${H[minI].score})`;
+    const last7=scores.slice(-7), prev7=scores.slice(-14,-7);
+    if(te&&prev7.length){const diff=(last7.reduce((a,b)=>a+b,0)/last7.length-(prev7.reduce((a,b)=>a+b,0)/prev7.length));
+      te.textContent=`${diff>=0?'+':''}${diff.toFixed(1)} vs prior week`;}
+  }
+  // Overview energy
+  const oeEl=document.getElementById('ch-ov-e');
+  if(oeEl){const ctx=oeEl.getContext('2d');
+    charts.oe=new Chart(ctx,{type:'line',data:{labels,datasets:[
+      {label:'☀️ Morning',data:H.map(d=>d.mo),borderColor:PEACH(),borderWidth:2,pointRadius:3,tension:.4,fill:false},
+      {label:'🌤️ Midday',data:H.map(d=>d.mi),borderColor:BUTT(),borderWidth:2,pointRadius:3,tension:.4,fill:false},
+      {label:'🌙 Night',data:H.map(d=>d.ni),borderColor:LAV(),borderWidth:2,pointRadius:3,tension:.4,fill:false},
+    ]},options:{...BASE_OPT,plugins:{...BASE_OPT.plugins,legend:{position:'bottom',labels:{boxWidth:10,padding:12}}},scales:{...BASE_OPT.scales,y:{...BASE_OPT.scales.y,min:0,max:5,ticks:{stepSize:1}}}}});
+  }
+  // Overview mental load
+  const omEl=document.getElementById('ch-ov-ml');
+  if(omEl){const ctx=omEl.getContext('2d');
+    charts.om=new Chart(ctx,{type:'line',data:{labels,datasets:[
+      {label:'Mental Load',data:H.map(d=>d.mental),borderColor:LAV(),backgroundColor:c=>lGrad(c.chart.ctx,PEACH),
+        borderWidth:2.5,fill:true,tension:.4,pointRadius:4,
+        pointBackgroundColor:H.map(d=>d.mental>=7?PEACH():'white'),pointBorderColor:LAV(),pointBorderWidth:2},
+      {label:'Danger Zone (7)',data:Array(H.length).fill(7),borderColor:PEACH(.6),borderWidth:1.5,borderDash:[5,3],pointRadius:0,fill:false}
+    ]},options:{...BASE_OPT,plugins:{...BASE_OPT.plugins,legend:{position:'bottom',labels:{boxWidth:10,padding:12}}},scales:{...BASE_OPT.scales,y:{...BASE_OPT.scales.y,min:0,max:10,ticks:{stepSize:2}}}}});
+  }
+  // Heatmap
+  const hm=document.getElementById('heatmap');
+  if(hm){hm.innerHTML='';
+    const base=new Date(2026,3,1),start=base.getDay();
+    for(let i=0;i<start;i++){const c=document.createElement('div');c.className='hc h0';c.style.opacity='.15';hm.appendChild(c);}
+    for(let d=0;d<30;d++){
+      const c=document.createElement('div');
+      const dateStr=`2026-04-${String(d+1).padStart(2,'0')}`;
+      const entry=H.find(h=>h.date===dateStr);
+      const s=entry?entry.score:(Math.random()*5+2);
+      let cls='h0';
+      if(s>=8)cls='h5';else if(s>=6.5)cls='h4';else if(s>=5)cls='h3';else if(s>=3.5)cls='h2';else cls='h1';
+      c.className=`hc ${cls}`;c.textContent=d+1;c.title=`Apr ${d+1}: ${parseFloat(s).toFixed(1)}`;
+      hm.appendChild(c);
+    }
+  }
+  // Day bars
+  const dbC=document.getElementById('dayBars');
+  if(dbC){dbC.innerHTML='';
+    const dayS=Array(7).fill(null).map(()=>[]);
+    H.forEach((d,i)=>{ const wday=(new Date(d.date||'2026-04-19')).getDay(); dayS[wday].push(d.score); });
+    const avgs=dayS.map(arr=>arr.length?parseFloat((arr.reduce((a,b)=>a+b,0)/arr.length).toFixed(1)):0);
+    const cols=[LAV(.8),PEACH(.8),MINT(.8),MINT(1),SKY(1),BUTT(1),LAV(.8)];
+    avgs.forEach((v,i)=>{
+      const wrap=document.createElement('div');wrap.className='dbw';
+      const bar=document.createElement('div');bar.className='db';
+      bar.style.height=Math.max((v/10*70),4)+'px';bar.style.background=cols[i];
+      bar.title=`${['Sun','Mon','Tue','Wed','Thu','Fri','Sat'][i]}: ${v}`;
+      wrap.appendChild(bar);dbC.appendChild(wrap);
+    });
+    const maxI=avgs.indexOf(Math.max(...avgs));
+    const bd=document.getElementById('best-day');
+    if(bd) bd.textContent=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'][maxI];
+  }
+  // Decision donut
+  const ddEl=document.getElementById('ch-dec-donut');
+  if(ddEl){const ctx=ddEl.getContext('2d');
+    const types={Emotional:0,Logical:0,Instinct:0,'Data-based':0};
+    H.forEach(d=>{if(types[d.decType]!==undefined)types[d.decType]++;});
+    charts.dd=new Chart(ctx,{type:'doughnut',data:{labels:Object.keys(types),
+      datasets:[{data:Object.values(types),backgroundColor:[PEACH(.9),SKY(.9),MINT(.9),BUTT(.9)],borderColor:'white',borderWidth:3,hoverOffset:6}]},
+      options:{responsive:true,cutout:'65%',plugins:{legend:{position:'bottom',labels:{boxWidth:10,padding:12}}}}});
+  }
+  // Energy full
+  const efEl=document.getElementById('ch-e-full');
+  if(efEl){const ctx=efEl.getContext('2d');
+    charts.ef=new Chart(ctx,{type:'line',data:{labels,datasets:[
+      {label:'☀️ Morning',data:H.map(d=>d.mo),borderColor:PEACH(),borderWidth:2.5,pointRadius:4,tension:.4,fill:false},
+      {label:'🌤️ Midday',data:H.map(d=>d.mi),borderColor:BUTT(),borderWidth:2.5,pointRadius:4,tension:.4,fill:false},
+      {label:'🌙 Night',data:H.map(d=>d.ni),borderColor:LAV(),borderWidth:2.5,pointRadius:4,tension:.4,fill:false},
+    ]},options:{...BASE_OPT,plugins:{...BASE_OPT.plugins,legend:{position:'bottom',labels:{boxWidth:10,padding:12}}},scales:{...BASE_OPT.scales,y:{...BASE_OPT.scales.y,min:0,max:5,ticks:{stepSize:1}}}}});
+  }
+  // Prime time
+  const ptEl=document.getElementById('ch-prime');
+  if(ptEl){const ctx=ptEl.getContext('2d');
+    const hourly=[2.1,2.0,1.8,1.7,1.9,2.3,3.1,3.8,4.4,4.6,4.2,3.8,3.2,2.8,2.5,2.9,3.4,3.1,2.8,2.3,2.0,1.8,1.7,1.6];
+    charts.pt=new Chart(ctx,{type:'line',data:{labels:Array.from({length:24},(_,i)=>`${i}:00`),
+      datasets:[{label:'Avg Energy',data:hourly,borderColor:PEACH(),backgroundColor:c=>{const g=c.chart.ctx.createLinearGradient(0,0,0,180);g.addColorStop(0,PEACH(.3));g.addColorStop(1,PEACH(.0));return g;},borderWidth:2.5,fill:true,tension:.5,pointRadius:2}]},
+      options:{responsive:true,plugins:{legend:{display:false}},scales:{x:{grid:{display:false},ticks:{maxTicksLimit:8}},y:{min:0,max:5,ticks:{stepSize:1},grid:{color:'rgba(200,180,220,.12)'}}}}});
+  }
+  // Energy dist
+  const edEl=document.getElementById('ch-e-dist');
+  if(edEl){const ctx=edEl.getContext('2d');
+    const allE=[...H.map(d=>d.mo),...H.map(d=>d.mi),...H.map(d=>d.ni)];
+    const dist=[1,2,3,4,5].map(v=>allE.filter(e=>e===v).length);
+    charts.ed=new Chart(ctx,{type:'bar',data:{labels:['😴 L1','😪 L2','😊 L3','😄 L4','🔥 L5'],
+      datasets:[{data:dist,backgroundColor:[PEACH(.5),PEACH(.7),BUTT(.8),MINT(.8),MINT(1)],borderRadius:8,borderSkipped:false}]},
+      options:{responsive:true,plugins:{legend:{display:false}},scales:{y:{grid:{color:'rgba(200,180,220,.12)'},ticks:{stepSize:2}},x:{grid:{display:false}}}}});
+  }
+  // Mental load full
+  const mfEl=document.getElementById('ch-ml-full');
+  if(mfEl){const ctx=mfEl.getContext('2d');
+    const danger=H.filter(d=>d.mental>=7).length, clear=H.filter(d=>d.mental<=3).length;
+    const de=document.getElementById('danger-days'),ce=document.getElementById('clear-days');
+    if(de) de.textContent=danger; if(ce) ce.textContent=clear;
+    // Update gauge
+    const avg=H.reduce((a,d)=>a+d.mental,0)/H.length;
+    const risk=Math.round((avg/10)*100);
+    const gp=document.getElementById('gauge-pct');if(gp)gp.textContent=risk+'%';
+    const gl=document.getElementById('gauge-label');
+    if(gl) gl.textContent=risk<30?'🌿 Low Risk':risk<50?'😊 Moderate':risk<70?'⚠️ High':'🆘 Critical';
+    charts.mf=new Chart(ctx,{type:'line',data:{labels,datasets:[
+      {label:'Mental Load',data:H.map(d=>d.mental),borderColor:LAV(),backgroundColor:c=>lGrad(c.chart.ctx,PEACH),
+        borderWidth:2.5,fill:true,tension:.4,pointRadius:5,
+        pointBackgroundColor:H.map(d=>d.mental>=7?PEACH():'white'),pointBorderColor:LAV(),pointBorderWidth:2},
+      {label:'Danger (7)',data:Array(H.length).fill(7),borderColor:PEACH(.7),borderWidth:1.5,borderDash:[6,3],pointRadius:0,fill:false},
+      {label:'Ideal (4)',data:Array(H.length).fill(4),borderColor:MINT(.6),borderWidth:1.5,borderDash:[3,3],pointRadius:0,fill:false}
+    ]},options:{...BASE_OPT,plugins:{...BASE_OPT.plugins,legend:{position:'bottom',labels:{boxWidth:10,padding:12}}},scales:{...BASE_OPT.scales,y:{...BASE_OPT.scales.y,min:0,max:10,ticks:{stepSize:2}}}}});
+  }
+  // Load vs energy scatter
+  const lvEl=document.getElementById('ch-lv-e');
+  if(lvEl){const ctx=lvEl.getContext('2d');
+    charts.lv=new Chart(ctx,{type:'scatter',data:{datasets:[{label:'Load vs Energy',
+      data:H.map(d=>({x:d.mental,y:parseFloat(((d.mo+d.mi+d.ni)/3).toFixed(1))})),
+      backgroundColor:LAV(.7),borderColor:LAV(),borderWidth:1.5,pointRadius:7,pointHoverRadius:9}]},
+      options:{responsive:true,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>`Load: ${c.raw.x}, Energy: ${c.raw.y.toFixed(1)}`}}},
+        scales:{x:{min:0,max:10,ticks:{stepSize:2},title:{display:true,text:'Mental Load'},grid:{color:'rgba(200,180,220,.12)'}},
+          y:{min:0,max:5,ticks:{stepSize:1},title:{display:true,text:'Avg Energy'},grid:{color:'rgba(200,180,220,.12)'}}}}});
+  }
+  // Recharge
+  const rcEl=document.getElementById('ch-rc');
+  if(rcEl){const ctx=rcEl.getContext('2d');
+    charts.rc=new Chart(ctx,{type:'bar',data:{labels:['🍵 Tea','🚶 Walk','🫁 Breathe','📖 Read','🎵 Music','💤 Rest'],
+      datasets:[{label:'Times',data:[8,5,6,3,7,2],backgroundColor:[PEACH(.8),MINT(.8),LAV(.8),SKY(.8),BUTT(.8),MINT(.6)],borderRadius:8,borderSkipped:false}]},
+      options:{indexAxis:'y',responsive:true,plugins:{legend:{display:false}},scales:{x:{grid:{color:'rgba(200,180,220,.12)'}},y:{grid:{display:false}}}}});
+  }
+  // Outcomes
+  const ocEl=document.getElementById('ch-oc');
+  if(ocEl){const ctx=ocEl.getContext('2d');
+    charts.oc=new Chart(ctx,{type:'bar',data:{labels,datasets:[
+      {label:'✅ Completed',data:H.map(d=>d.outDone_n||0),backgroundColor:MINT(.85),borderRadius:6,borderSkipped:false},
+      {label:'📋 Set',data:H.map(d=>d.outSet||3),backgroundColor:MINT(.2),borderRadius:6,borderSkipped:false}
+    ]},options:{...BASE_OPT,plugins:{...BASE_OPT.plugins,legend:{position:'bottom',labels:{boxWidth:10,padding:12}}},scales:{...BASE_OPT.scales,y:{...BASE_OPT.scales.y,max:3,ticks:{stepSize:1}}}}});
+  }
+  // Ta-Da
+  const tdEl=document.getElementById('ch-tada');
+  if(tdEl){const ctx=tdEl.getContext('2d');
+    charts.td=new Chart(ctx,{type:'bar',data:{labels,datasets:[{label:'🌿 Wins',data:H.map(d=>d.tada_n||0),
+      backgroundColor:H.map(d=>(d.tada_n||0)>=5?MINT(1):(d.tada_n||0)>=3?BUTT(.9):PEACH(.7)),borderRadius:8,borderSkipped:false}]},
+      options:{responsive:true,plugins:{legend:{display:false}},scales:{y:{min:0,ticks:{stepSize:2},grid:{color:'rgba(200,180,220,.12)'}},x:{grid:{display:false}}}}});
+  }
+  // Hit rate
+  const hrEl=document.getElementById('ch-hit');
+  if(hrEl){const ctx=hrEl.getContext('2d');
+    charts.hr=new Chart(ctx,{type:'line',data:{labels:['Week 1','Week 2','Week 3','Week 4'],
+      datasets:[{label:'Hit Rate %',data:[44,75,82,68],borderColor:MINT(),
+        backgroundColor:c=>{const g=c.chart.ctx.createLinearGradient(0,0,0,150);g.addColorStop(0,MINT(.3));g.addColorStop(1,MINT(.0));return g;},
+        borderWidth:2.5,pointRadius:7,pointBackgroundColor:'white',pointBorderColor:MINT(),pointBorderWidth:2.5,fill:true,tension:.3}]},
+      options:{responsive:true,plugins:{legend:{display:false}},scales:{y:{min:0,max:100,ticks:{callback:v=>v+'%'},grid:{color:'rgba(200,180,220,.12)'}},x:{grid:{display:false}}}}});
+  }
+  // Decision pie
+  const dpEl=document.getElementById('ch-dec-pie');
+  if(dpEl){const ctx=dpEl.getContext('2d');
+    const types={Emotional:0,Logical:0,Instinct:0,'Data-based':0};
+    H.forEach(d=>{if(types[d.decType]!==undefined)types[d.decType]++;});
+    charts.dp=new Chart(ctx,{type:'doughnut',data:{labels:['😊 Emotional','🧠 Logical','🎲 Instinct','📊 Data-based'],
+      datasets:[{data:Object.values(types),backgroundColor:[PEACH(.9),SKY(.9),MINT(.9),BUTT(.9)],borderColor:'white',borderWidth:3,hoverOffset:8}]},
+      options:{responsive:true,cutout:'60%',plugins:{legend:{position:'bottom',labels:{boxWidth:10,padding:12}}}}});
+  }
+  // Decision quality
+  const dqEl=document.getElementById('ch-dec-q');
+  if(dqEl){const ctx=dqEl.getContext('2d');
+    charts.dq=new Chart(ctx,{type:'bar',data:{labels:['😊 Emotional','🧠 Logical','🎲 Instinct','📊 Data-based'],
+      datasets:[{label:'Avg Satisfaction',data:[2.6,3.9,3.4,4.2],
+        backgroundColor:[PEACH(.85),SKY(.85),MINT(.85),BUTT(.85)],borderRadius:10,borderSkipped:false}]},
+      options:{responsive:true,plugins:{legend:{display:false}},scales:{y:{min:0,max:5,ticks:{stepSize:1},grid:{color:'rgba(200,180,220,.12)'}},x:{grid:{display:false}}}}});
+  }
+  // Decision outcome
+  const doEl=document.getElementById('ch-dec-out');
+  if(doEl){const ctx=doEl.getContext('2d');
+    charts.dout=new Chart(ctx,{type:'bar',data:{labels,datasets:[
+      {label:'✅ Good',data:H.map((_,i)=>i%3===1||i%7===1?0:1),backgroundColor:MINT(.8),borderRadius:5,borderSkipped:false,stack:'s'},
+      {label:'❌ Poor',data:H.map((_,i)=>i%3===1||i%7===1?1:0),backgroundColor:PEACH(.8),borderRadius:5,borderSkipped:false,stack:'s'}
+    ]},options:{responsive:true,plugins:{legend:{position:'bottom',labels:{boxWidth:10,padding:12}}},
+      scales:{y:{max:1,ticks:{display:false},stacked:true},x:{grid:{display:false},stacked:true,ticks:{maxTicksLimit:8}}}}});
+  }
+  // Radar
+  const rrEl=document.getElementById('ch-radar');
+  if(rrEl){const ctx=rrEl.getContext('2d');
+    const avgE=H.reduce((a,d)=>a+(d.mo+d.mi+d.ni)/3,0)/H.length;
+    const avgML=H.reduce((a,d)=>a+d.mental,0)/H.length;
+    const avgOC=H.reduce((a,d)=>a+(d.outDone_n||0)/(d.outSet||3),0)/H.length;
+    const avgTD=H.reduce((a,d)=>a+Math.min((d.tada_n||0)/6,1),0)/H.length;
+    const scores=[avgE/5*100,Math.max(0,10-avgML)/10*100,avgOC*100,74,avgTD*100];
+    const dims=['⚡ Energy','🧠 Load Mgmt','🎯 Outcomes','🧩 Decisions','🌿 Ta-Da'];
+    const maxI=scores.indexOf(Math.max(...scores)),minI=scores.indexOf(Math.min(...scores));
+    const rb=document.getElementById('radar-best'),rl=document.getElementById('radar-low');
+    if(rb) rb.textContent=dims[maxI]; if(rl) rl.textContent=dims[minI];
+    if(charts.rr) charts.rr.destroy();
+    charts.rr=new Chart(ctx,{type:'radar',data:{labels:dims,datasets:[
+      {label:'You',data:scores,borderColor:LAV(),backgroundColor:LAV(.18),borderWidth:2,pointRadius:5,pointBackgroundColor:'white',pointBorderColor:LAV()},
+      {label:'Ideal',data:[80,80,80,80,80],borderColor:MINT(.5),backgroundColor:MINT(.04),borderWidth:1.5,borderDash:[4,3],pointRadius:3}
+    ]},options:{responsive:true,plugins:{legend:{position:'bottom',labels:{boxWidth:10,padding:12}}},
+      scales:{r:{min:0,max:100,ticks:{stepSize:20,font:{size:9}},grid:{color:'rgba(200,180,220,.2)'},pointLabels:{font:{size:10},color:'#6A5878'}}}}});
+  }
+}
+function setPeriod(days,btn){
+  document.querySelectorAll('.pt').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+  const labels={7:'Last 7 days',14:'Last 14 days',30:'Last 30 days'};
+  const el=document.getElementById('ov-sub');if(el)el.textContent=labels[days]||'';
+  try{destroyCharts();buildCharts();}catch(e){console.warn('Chart rebuild:',e);}
+}
+
+// ═══════════════════════════════════════════════════════════
+// INSIGHTS
+// ═══════════════════════════════════════════════════════════
+function refreshInsights(){
+  const H=getHistory();
+  if(H.length<3){return;}
+  const el=document.getElementById('insights-list');if(!el)return;
+  const avgE=H.reduce((a,d)=>a+(d.mo+d.mi+d.ni)/3,0)/H.length;
+  const avgML=H.reduce((a,d)=>a+d.mental,0)/H.length;
+  const avgScore=H.reduce((a,d)=>a+(d.score||0),0)/H.length;
+  const sub=document.getElementById('insights-sub');
+  if(sub) sub.textContent=`Based on your ${H.length} logged days`;
+  const insights=[];
+  // Energy pattern
+  insights.push({cls:'ic-m',em:'⚡',title:'Your Average Energy',body:`Your energy averages <strong>${avgE.toFixed(1)}/5</strong> across morning, midday and night. ${avgE>=4?'You\'re operating at high energy — protect this by keeping mental load manageable.':avgE>=3?'Your energy is moderate. Focus on sleep quality and morning sunlight to lift it.':'Your energy is low. Prioritise rest above productivity until you recover.'}`});
+  // Mental load
+  insights.push({cls:'ic-l',em:'🧠',title:'Mental Load Trend',body:`Your average mental load is <strong>${avgML.toFixed(1)}/10</strong>. ${avgML>=7?'🆘 This is in the danger zone. You need to actively reduce commitments and increase recovery time this week.':avgML>=5?'⚠️ Your load is building. Watch for patterns — what triggers your heaviest days?':'🌿 Your mental load is healthy. Keep protecting your mental space.'}`});
+  // Cozy score
+  insights.push({cls:'ic-s',em:'✨',title:'Overall Wellness Pattern',body:`Your average Cozy Score is <strong>${avgScore.toFixed(1)}/10</strong> over ${H.length} days. ${avgScore>=8?'You are thriving. Your tracking habits are working — keep the system going.':avgScore>=6?'You are steady. A few targeted improvements would push you into thriving territory.':avgScore>=4?'You are managing but there\'s room to grow. Focus on your lowest dimension first.':'Your Cozy Score suggests you need focused self-care. Review your burnout check.'}`});
+  // Winning days
+  const dayBuckets=Array(7).fill(null).map(()=>[]);
+  H.forEach(d=>{const wd=(new Date(d.date||'2026-04-19')).getDay();dayBuckets[wd].push(d.score||0);});
+  const dayAvgs=dayBuckets.map(arr=>arr.length?arr.reduce((a,b)=>a+b,0)/arr.length:0);
+  const bestDay=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'][dayAvgs.indexOf(Math.max(...dayAvgs.filter(Boolean)))];
+  insights.push({cls:'ic-p',em:'📅',title:`${bestDay} is Your Power Day`,body:`Your Cozy Score is consistently highest on <strong>${bestDay}s</strong> based on your logged data. Schedule your most important work and hardest decisions on this day. Protect your ${bestDay} mornings fiercely.`});
+  // Ta-Da
+  const avgTD=H.reduce((a,d)=>a+(d.tada_n||0),0)/H.length;
+  insights.push({cls:'ic-b',em:'🌿',title:'Ta-Da Log Impact',body:`You average <strong>${avgTD.toFixed(1)} wins per day</strong>. ${avgTD>=5?'Excellent! Days with 5+ wins correlate with Cozy Scores 2+ points higher than zero-win days.':avgTD>=3?'Good momentum. Aim for 5 wins per day to boost your Cozy Score measurably.':'Try logging more wins — even tiny ones. The evidence shows it significantly lifts your score.'}`});
+  el.innerHTML=insights.map(i=>`<div class="ic ${i.cls}"><div class="ic-hd"><span class="ic-em">${i.em}</span><div class="ic-title">${i.title}</div></div><div class="ic-body">${i.body}</div></div>`).join('');
+}
+
+// ═══════════════════════════════════════════════════════════
+// MATRIX
+// ═══════════════════════════════════════════════════════════
+function addMx(){
+  const inp=document.getElementById('mx-inp'),qId=document.getElementById('mx-sel').value;
+  const text=inp.value.trim();if(!text)return;
+  const dots={'q-do':'var(--mx)','q-sc':'var(--sx)','q-dl':'var(--bx)','q-el':'var(--px)'};
+  const c=document.getElementById(qId);
+  const item=document.createElement('div');item.className='mq-item';item.style.animation='fadeUp .3s ease';
+  item.innerHTML=`<div class="mq-dot" style="background:${dots[qId]}"></div>${text}<span class="mq-rm" onclick="this.parentNode.remove()">✕</span>`;
+  c.appendChild(item);inp.value='';
+}
+
+// ═══════════════════════════════════════════════════════════
+// BURNOUT QUIZ
+// ═══════════════════════════════════════════════════════════
+const bqAnswers={};
+function startBQ(){
+  document.getElementById('bq-intro').style.display='none';
+  document.getElementById('bq-prog').classList.add('show');
+  document.getElementById('bq-form').classList.add('show');
+  document.getElementById('bq-results').classList.remove('show');
+  Object.keys(bqAnswers).forEach(k=>delete bqAnswers[k]);
+  document.querySelectorAll('.lb').forEach(b=>b.classList.remove('on'));
+  updateBQProgress();
+}
+function setQ(q,val,btn){
+  bqAnswers[q]=val;
+  btn.closest('.likert').querySelectorAll('.lb').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+  updateBQProgress();
+}
+function updateBQProgress(){
+  const answered=Object.keys(bqAnswers).length;
+  document.getElementById('bqp-fill').style.width=(answered/20*100)+'%';
+  document.getElementById('bqp-count').textContent=`${answered} / 20`;
+  document.getElementById('bq-submit').classList.toggle('show',answered===20);
+}
+function scoreBQ(){
+  const qs=bqAnswers;
+  const dims={
+    physical: [qs[1]||0,qs[2]||0,qs[3]||0,qs[4]||0],
+    emotional:[qs[5]||0,qs[6]||0,qs[7]||0,qs[8]||0],
+    mental:   [qs[9]||0,qs[10]||0,qs[11]||0,qs[12]||0],
+    motivation:[qs[13]||0,qs[14]||0,qs[15]||0,qs[16]||0],
+    recovery: [qs[17]||0,qs[18]||0,qs[19]||0,qs[20]||0],
+  };
+  const dimScores={};
+  Object.entries(dims).forEach(([k,v])=>{dimScores[k]=v.reduce((a,b)=>a+b,0);});
+  const total=Object.values(dimScores).reduce((a,b)=>a+b,0);
+  document.getElementById('bq-form').classList.remove('show');
+  document.getElementById('bq-prog').classList.remove('show');
+  document.getElementById('bq-results').classList.add('show');
+  const sh=document.getElementById('sh-num'); sh.textContent=total;
+  let bg,band,desc;
+  if(total>=80){bg='linear-gradient(135deg,#4DB89A,#2E8A72)';band='🌟 Thriving';desc='You are doing beautifully. Your systems are working. Protect what\'s working — identify the 2-3 habits driving this and make them non-negotiable. Stay curious about your patterns.';}
+  else if(total>=65){bg='linear-gradient(135deg,#4A9ED4,#2276A8)';band='🌤️ Coasting';desc='Mostly good but something is quietly draining you. Look at your lowest dimension — that\'s where the leak is. One small daily habit change in your weakest area will shift this within 2 weeks.';}
+  else if(total>=50){bg='linear-gradient(135deg,#D4A800,#A07800)';band='⚠️ Caution Zone';desc='Burnout is building. You may not feel "burned out" yet but the signs are there. Reduce one major commitment this week. Add one recovery ritual daily. Talk to someone you trust.';}
+  else if(total>=35){bg='linear-gradient(135deg,#E8916A,#C4673E)';band='🔥 Burnout Zone';desc='You need real rest — not productivity. Stop adding more and start removing things. Sleep, sunlight, and human connection are your medicine right now. Seek support from someone close to you.';}
+  else{bg='linear-gradient(135deg,#E06090,#A03060)';band='🆘 Critical';desc='Please prioritise your recovery above everything else. This level of burnout affects physical health, decision-making and relationships. Talk to a doctor, therapist or trusted person today.';}
+  document.getElementById('sh-bg').style.background=bg;
+  document.getElementById('sh-band').textContent=band;
+  document.getElementById('sh-desc').textContent=desc;
+  // Dimension cards
+  const dimMeta={
+    physical:{em:'💪',name:'Physical Vitality',color:'var(--pd)'},
+    emotional:{em:'💜',name:'Emotional Resilience',color:'var(--ld)'},
+    mental:{em:'🧠',name:'Mental Clarity',color:'var(--sd)'},
+    motivation:{em:'🎯',name:'Motivation & Purpose',color:'var(--md)'},
+    recovery:{em:'🌿',name:'Recovery & Connection',color:'var(--bd)'},
+  };
+  const dg=document.getElementById('dim-grid'); dg.innerHTML='';
+  const dimEntries=Object.entries(dimScores);
+  const lowestDim=dimEntries.reduce((a,b)=>b[1]<a[1]?b:a)[0];
+  dimEntries.forEach(([k,v])=>{
+    const meta=dimMeta[k]; const pct=Math.round(v/20*100);
+    const barCol=pct>=70?'var(--md)':pct>=50?'var(--bd)':'var(--pd)';
+    dg.innerHTML+=`<div class="dim-card">
+      <div class="dim-hd"><span class="dim-em">${meta.em}</span><div class="dim-title">${meta.name}</div>${k===lowestDim?'<span style="font-size:10px;background:var(--r);color:var(--rd);padding:2px 8px;border-radius:10px;font-weight:700;margin-left:auto;">Focus here</span>':''}</div>
+      <div class="dim-bar-wrap"><div class="dim-bar" style="width:${pct}%;background:${barCol};"></div></div>
+      <div class="dim-nums"><span style="font-family:Caveat,cursive;font-size:22px;font-weight:700;color:${meta.color};">${v}</span><span style="font-size:11px;color:var(--mid);">/20 · ${pct}%</span></div>
+    </div>`;
+  });
+  // Action plan
+  const ap=document.getElementById('action-plan'); ap.innerHTML='';
+  const actions={
+    physical:{bg:'var(--p)',txt:'Your physical vitality needs attention. Prioritise sleep quality above everything else — aim for consistent bedtimes. Add 15 minutes of morning sunlight daily. This one habit shifts energy levels measurably within a week.'},
+    emotional:{bg:'var(--l)',txt:'Your emotional resilience is depleted. This often shows up as irritability, numbness or feeling overwhelmed by small things. Start by completing the stress cycle — exercise, laughter, or a good cry all count. Journaling 3 good things nightly rewires this within 2 weeks.'},
+    mental:{bg:'var(--s)',txt:'Your mental clarity is suffering. This is your brain asking for less input, not more effort. Remove one digital source of distraction this week. Protect 60 minutes of phone-free time daily. Your focus will return when given space to recover.'},
+    motivation:{bg:'var(--m)',txt:'Your sense of purpose feels distant right now. This often means you\'ve been serving others\' goals over your own. Revisit your core values — write them down. Reconnect with one thing you genuinely enjoy and protect time for it weekly.'},
+    recovery:{bg:'var(--b)',txt:'Your recovery systems are broken. You\'re not coming back from rest feeling restored, which means you need to change HOW you rest. Passive activities (scrolling, TV) don\'t restore. Active rest (walking, hobbies, real conversation) does. Try one active recovery activity daily.'},
+  };
+  const action=actions[lowestDim];
+  ap.innerHTML=`<div class="advice-card" style="background:${action.bg}">
+    <span class="ac-em">${dimMeta[lowestDim].em}</span>
+    <div class="ac-title">Your Priority: ${dimMeta[lowestDim].name}</div>
+    <div class="ac-text">${action.txt}</div>
+  </div>`;
+  // Exercises
+  const allEx=[
+    {em:'💨',title:'Box Breathing',time:'4 min',bg:'var(--m)',tc:'var(--mx)',body:'Inhale 4 → hold 4 → exhale 4 → hold 4. Repeat 4×. Activates parasympathetic nervous system within 90 seconds.',for:[20,34,35,49,50,64]},
+    {em:'✋',title:'5-4-3-2-1 Grounding',time:'2 min',bg:'var(--s)',tc:'var(--sx)',body:'Name 5 things you see, 4 you can touch, 3 you hear, 2 you smell, 1 you taste. Instant anxiety reset.',for:[20,64]},
+    {em:'☀️',title:'Morning Sunlight',time:'15 min',bg:'var(--b)',tc:'var(--bx)',body:'Outside within 30 min of waking. No sunglasses. Sets circadian rhythm, boosts energy, improves night sleep.',for:[20,79]},
+    {em:'🚶',title:'Phone-Free Walk',time:'20 min',bg:'var(--m)',tc:'var(--mx)',body:'Walk with no destination and no phone. Restores cognitive function and unlocks creative thinking.',for:[20,64]},
+    {em:'💪',title:'Progressive Muscle Relax',time:'10 min',bg:'var(--l)',tc:'var(--lx)',body:'Tense each muscle group 5 sec, release 30 sec. Start at feet, move up. Releases stored body stress.',for:[20,49]},
+    {em:'✍️',title:'3 Good Things',time:'5 min',bg:'var(--m)',tc:'var(--mx)',body:'Write 3 specific things that went well today and WHY. Measurable wellbeing boost within 2 weeks.',for:[35,79]},
+    {em:'📵',title:'Digital Sunset',time:'Daily',bg:'var(--s)',tc:'var(--sx)',body:'No screens 60 min before sleep. Suppresses melatonin loss. Sleep quality improves within days.',for:[50,100]},
+    {em:'💧',title:'Cold Water Splash',time:'30 sec',bg:'var(--b)',tc:'var(--bx)',body:'Splash cold water on face 10×. Triggers mammalian dive reflex. Fastest nervous system reset anywhere.',for:[35,79]},
+  ];
+  const rec=allEx.filter(e=>total>=e.for[0]&&total<=e.for[1]).slice(0,4);
+  const eg=document.getElementById('ex-grid'); eg.innerHTML=rec.map(e=>`
+    <div class="ex-card"><div class="ex-hd"><span class="ex-em">${e.em}</span><div class="ex-title">${e.title}</div><span class="ex-time" style="background:${e.bg};color:${e.tc};">${e.time}</span></div><div class="ex-body">${e.body}</div></div>`).join('');
+  if(!rec.length) eg.innerHTML='<p style="color:var(--mid);font-size:13px;">All exercises are in the Library 📚</p>';
+  // Books
+  const booksByDim={
+    physical:[{s:'#E8916A',t:'Rest',a:'Alex Soojung-Kim Pang',w:'The science of why rest is essential. Reframes rest as active and powerful.'},
+              {s:'#FFBFA0',t:'Why We Sleep',a:'Matthew Walker',w:'Definitive guide to sleep science. Will permanently change how you rest.'}],
+    emotional:[{s:'#9B72D0',t:'Burnout',a:'Emily & Amelia Nagoski',w:'The stress cycle and how to complete it. The most important book for emotional burnout.'},
+               {s:'#CDB8F5',t:'Set Boundaries Find Peace',a:'Nedra Tawwab',w:'Practical boundary-setting. Essential if people-pleasing is draining you.'}],
+    mental:[{s:'#4A9ED4',t:'Stolen Focus',a:'Johann Hari',w:'Why your attention is broken and who profits. Essential for the digital age.'},
+            {s:'#9ED0F5',t:'Four Thousand Weeks',a:'Oliver Burkeman',w:'A radical reframe of time. Helps you stop trying to do everything.'}],
+    motivation:[{s:'#4DB89A',t:'Essentialism',a:'Greg McKeown',w:'The disciplined pursuit of less. Helps you find what actually matters.'},
+                {s:'#9FE0C8',t:'Dopamine Nation',a:'Anna Lembke',w:'Why rest feels hard and how to recalibrate your reward system.'}],
+    recovery:[{s:'#D4A800',t:'The Body Keeps the Score',a:'Bessel van der Kolk',w:'How stress lives in the body. Explains physical burnout symptoms.'},
+              {s:'#FFE070',t:'Atomic Habits',a:'James Clear',w:'Build tiny recovery habits that compound. Perfect for rebuilding gently.'}],
+  };
+  const books=booksByDim[lowestDim]||[];
+  document.getElementById('book-list').innerHTML=books.map(b=>`
+    <div class="book-item"><div class="book-spine" style="background:${b.s};"></div>
+    <div><div class="book-title">${b.t}</div><div class="book-author">by ${b.a}</div><div class="book-why">${b.w}</div></div></div>`).join('');
+  // History
+  renderBQHistory();
+}
+function saveBQ(){
+  const total=parseInt(document.getElementById('sh-num').textContent)||0;
+  if(!total){showToast('Complete the assessment first');return;}
+  const result={date:new Date().toLocaleDateString(),total,band:document.getElementById('sh-band').textContent};
+  store.saveBQ(result);
+  showToast('✨ Result saved to your history!');
+  renderBQHistory();
+}
+function retakeBQ(){
+  document.getElementById('bq-intro').style.display='';
+  document.getElementById('bq-results').classList.remove('show');
+  document.getElementById('bq-last-result').textContent='';
+  renderBQHistory();
+}
+function renderBQHistory(){
+  const hist=store.getBQ();
+  const el=document.getElementById('bq-history');if(!el)return;
+  if(!hist.length){el.innerHTML='';return;}
+  el.innerHTML=`<div style="font-family:'Caveat',cursive;font-size:20px;font-weight:700;margin-bottom:12px;">📊 Past Assessments</div>`+
+    hist.map(h=>{
+      const col=h.total>=80?'var(--md)':h.total>=65?'var(--sd)':h.total>=50?'var(--bd)':'var(--pd)';
+      return `<div class="bh-item"><div><div class="bh-date">${h.date}</div><div style="font-size:12px;color:var(--mid);">${h.band}</div></div><div class="bh-score" style="color:${col};">${h.total}</div></div>`;
+    }).join('');
+  const last=hist[0];
+  const lre=document.getElementById('bq-last-result');
+  if(lre) lre.textContent=`Last assessment: ${last.date} · Score ${last.total} · ${last.band}`;
+}
+
+// Init
+try{updateStreak();}catch(e){}
+try{renderBQHistory();}catch(e){}
+
+</script>
+</body>
+</html>
